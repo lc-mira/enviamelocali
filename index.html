@@ -1,0 +1,589 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Mercadeo Cali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MERCADEO CALI — Catálogo
+     Paleta "Urbano Confiable": grafito + amarillo vial + blanco
+     Tipografía: Oswald (display, condensada, industrial) + Inter (texto)
+     Layout: header fijo + hero + filtros sticky + grid de fichas
+     ============================================================ */
+  :root{
+    --bg:#F3F3F1;
+    --surface:#FFFFFF;
+    --surface-2:#ECECE9;
+    --ink:#17181B;
+    --ink-soft:#52565C;
+    --ink-faint:#86898F;
+    --line:#DEDFDB;
+    --accent:#FFC107;
+    --accent-ink:#17181B;
+    --accent-dim:#FFE39B;
+    --ok:#1E8E4F;
+    --ok-bg:#E4F5EA;
+    --low:#B8860B;
+    --low-bg:#FFF2D6;
+    --order:#50545B;
+    --order-bg:#E7E7E4;
+    --danger:#C0392B;
+    --shadow: 0 1px 2px rgba(23,24,27,.06), 0 8px 24px -12px rgba(23,24,27,.18);
+    --radius: 10px;
+    --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#121315; --surface:#1B1C1F; --surface-2:#232427;
+      --ink:#F2F2F0; --ink-soft:#C3C5C9; --ink-faint:#8D9096;
+      --line:#2E3034; --accent:#FFC107; --accent-ink:#17181B; --accent-dim:#4A3C0E;
+      --ok:#3FBE77; --ok-bg:#163424;
+      --low:#E0A52B; --low-bg:#3A2E10;
+      --order:#B7B9BE; --order-bg:#26272B;
+      --danger:#E8594D;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121315; --surface:#1B1C1F; --surface-2:#232427;
+    --ink:#F2F2F0; --ink-soft:#C3C5C9; --ink-faint:#8D9096;
+    --line:#2E3034; --accent:#FFC107; --accent-ink:#17181B; --accent-dim:#4A3C0E;
+    --ok:#3FBE77; --ok-bg:#163424;
+    --low:#E0A52B; --low-bg:#3A2E10;
+    --order:#B7B9BE; --order-bg:#26272B;
+    --danger:#E8594D;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--font-body);
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+  body::before{
+    content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px);
+    z-index:40; background:var(--ink);
+  }
+  h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0; letter-spacing:.01em}
+  p{margin:0}
+  img{max-width:100%}
+  button{font-family:inherit; cursor:pointer}
+  a{color:inherit}
+  .wrap{max-width:1180px; margin:0 auto}
+  .eyebrow{font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint)}
+
+  /* ---- Header ---- */
+  header{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+    background:var(--ink); color:#fff;
+    margin-left:calc(-1 * max(16px, env(safe-area-inset-left,0px)));
+    margin-right:calc(-1 * max(16px, env(safe-area-inset-right,0px)));
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+  .header-in{display:flex; align-items:center; justify-content:space-between; padding-block:14px; gap:12px}
+  .brand{display:flex; align-items:center; gap:10px}
+  .brand-mark{
+    width:34px; height:34px; background:var(--accent); color:var(--accent-ink);
+    display:flex; align-items:center; justify-content:center; border-radius:6px;
+    font-family:var(--font-display); font-weight:700; font-size:16px; flex:none;
+  }
+  .brand-name{font-family:var(--font-display); font-weight:600; font-size:18px; letter-spacing:.01em; line-height:1}
+  .brand-sub{font-size:10px; color:#C8CACD; letter-spacing:.1em; text-transform:uppercase; margin-top:2px}
+  .header-cta{
+    display:flex; align-items:center; gap:6px; background:var(--accent); color:var(--accent-ink);
+    font-weight:700; font-size:13px; padding:9px 14px; border-radius:999px; border:none; white-space:nowrap;
+  }
+
+  /* ---- Hero ---- */
+  .hero{padding-block:34px 22px}
+  .hero h1{font-size:clamp(28px,5.5vw,44px); font-weight:700; line-height:1.04}
+  .hero .accent{color:var(--low); }
+  :root[data-theme="dark"] .hero .accent, @media (prefers-color-scheme:dark){ }
+  .hero-sub{margin-top:10px; max-width:52ch; color:var(--ink-soft); font-size:15px; line-height:1.55}
+  .hero-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+  .trust{display:flex; gap:16px; flex-wrap:wrap; margin-top:20px}
+  .trust-item{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft); font-weight:500}
+  .trust-dot{width:7px;height:7px;border-radius:50%;background:var(--ok); flex:none}
+
+  /* ---- Filtros ---- */
+  .filters{
+    position:sticky; top:calc(env(safe-area-inset-top,0px) + 62px); z-index:20;
+    background:var(--bg); padding-block:10px; border-bottom:1px solid var(--line);
+  }
+  .cat-row{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; -ms-overflow-style:none; scrollbar-width:none}
+  .cat-row::-webkit-scrollbar{display:none}
+  .cat-btn{
+    flex:none; padding:9px 16px; border-radius:999px; border:1.5px solid var(--line);
+    background:var(--surface); color:var(--ink); font-weight:600; font-size:13.5px; white-space:nowrap;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .cat-btn[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .subcat-row{display:flex; gap:7px; overflow-x:auto; margin-top:8px; -ms-overflow-style:none; scrollbar-width:none}
+  .subcat-row::-webkit-scrollbar{display:none}
+  .subcat-row:empty{display:none}
+  .sub-btn{
+    flex:none; padding:6px 12px; border-radius:7px; border:1px solid transparent;
+    background:var(--surface-2); color:var(--ink-soft); font-size:12.5px; font-weight:600;
+  }
+  .sub-btn[aria-pressed="true"]{background:var(--accent-dim); color:var(--ink); border-color:var(--accent)}
+  .result-count{font-size:12px; color:var(--ink-faint); margin-top:8px; font-weight:500}
+
+  /* ---- Grid ---- */
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(168px,1fr)); gap:14px;
+    padding-block:20px 90px;
+  }
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; display:flex; flex-direction:column; text-align:left; border:1px solid var(--line);
+    box-shadow:var(--shadow); transition:transform .15s ease;
+  }
+  .card:hover{transform:translateY(-2px)}
+  .card-media{
+    aspect-ratio:1/1; background:var(--surface-2); display:flex; align-items:center; justify-content:center;
+    position:relative; padding:18px; overflow:hidden;
+  }
+  .card-media svg{width:100%; height:100%; max-width:92px}
+  .card-media img{width:100%; height:100%; object-fit:cover; padding:0}
+  .badge{
+    position:absolute; top:8px; left:8px; font-size:10px; font-weight:700; letter-spacing:.03em;
+    padding:4px 8px; border-radius:999px;
+  }
+  .badge.ok{background:var(--ok-bg); color:var(--ok)}
+  .badge.low{background:var(--low-bg); color:var(--low)}
+  .badge.order{background:var(--order-bg); color:var(--order)}
+  .card-body{padding:11px 12px 13px; display:flex; flex-direction:column; gap:5px; flex:1}
+  .card-cat{font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
+  .card-name{font-size:14px; font-weight:600; line-height:1.25; color:var(--ink); min-height:2.5em}
+  .card-meta{font-size:11.5px; color:var(--ink-soft)}
+  .card-foot{display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:7px}
+  .card-price{font-family:var(--font-display); font-weight:600; font-size:16px; font-variant-numeric:tabular-nums}
+  .card-btn{
+    background:var(--ink); color:#fff; border:none; border-radius:7px; padding:7px 10px; font-size:11.5px; font-weight:700;
+  }
+
+  /* ---- Empty state ---- */
+  .empty{padding:60px 10px; text-align:center; color:var(--ink-faint)}
+
+  /* ---- Floating WhatsApp ---- */
+  .fab{
+    position:fixed; right:calc(18px + env(safe-area-inset-right,0px)); bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    z-index:35; display:flex; align-items:center; gap:9px; background:#1EAE54; color:#fff;
+    border:none; padding:13px 18px 13px 14px; border-radius:999px; box-shadow:0 10px 26px -8px rgba(0,0,0,.4);
+    font-weight:700; font-size:13.5px;
+  }
+  .fab svg{width:20px; height:20px; flex:none}
+
+  /* ---- Modal ---- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(10,10,10,.55); z-index:50; display:flex; align-items:flex-end;
+    justify-content:center; padding:0;
+  }
+  @media (min-width:640px){ .overlay{align-items:center; padding:20px} }
+  .overlay[hidden]{display:none}
+  .sheet{
+    background:var(--surface); width:100%; max-width:480px; max-height:92vh; overflow-y:auto;
+    border-radius:16px 16px 0 0; padding:0 0 calc(18px + env(safe-area-inset-bottom,0px));
+    position:relative;
+  }
+  @media (min-width:640px){ .sheet{border-radius:16px} }
+  .sheet-top{position:sticky; top:0; background:var(--surface); display:flex; justify-content:flex-end; padding:10px 10px 0; z-index:2}
+  .sheet-close{background:var(--surface-2); border:none; width:30px; height:30px; border-radius:50%; font-size:16px; color:var(--ink-soft); line-height:1}
+  .sheet-media{background:var(--surface-2); margin:0 16px; border-radius:12px; aspect-ratio:16/10; display:flex; align-items:center; justify-content:center; padding:18px; overflow:hidden}
+  .sheet-media svg{width:100%; height:100%; max-width:130px}
+  .sheet-media img{width:100%; height:100%; object-fit:cover; padding:0}
+  .sheet-body{padding:16px 20px 0}
+  .sheet-cat{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
+  .sheet-name{font-size:21px; margin-top:4px}
+  .sheet-row{display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap}
+  .sheet-price{font-family:var(--font-display); font-size:22px; font-weight:600; font-variant-numeric:tabular-nums}
+  .sheet-meta{font-size:13px; color:var(--ink-soft); margin-top:10px; line-height:1.5}
+  .divider{height:1px; background:var(--line); margin:16px 0}
+  .form-label{font-size:12.5px; font-weight:600; color:var(--ink-soft); display:block; margin-bottom:6px}
+  .form-field{margin-bottom:13px}
+  .form-field input{
+    width:100%; padding:11px 12px; border-radius:8px; border:1.5px solid var(--line); background:var(--bg);
+    color:var(--ink); font-size:14.5px; font-family:var(--font-body);
+  }
+  .form-field input:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+  .submit-btn{
+    width:100%; background:#1EAE54; color:#fff; border:none; padding:13px; border-radius:9px;
+    font-weight:700; font-size:14.5px; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .submit-btn:disabled{opacity:.6}
+  .fine-print{font-size:11px; color:var(--ink-faint); margin-top:10px; text-align:center; line-height:1.5}
+  .form-error{font-size:12px; color:var(--danger); margin-top:-6px; margin-bottom:10px; display:none}
+
+  footer{border-top:1px solid var(--line); margin-top:10px; padding-block:26px calc(100px + env(safe-area-inset-bottom,0px))}
+  .foot-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px}
+  .foot-brand{font-family:var(--font-display); font-weight:600; font-size:15px}
+  .foot-sub{font-size:12px; color:var(--ink-faint); margin-top:4px}
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+</style>
+
+<header>
+  <div class="wrap header-in">
+    <div class="brand">
+      <div class="brand-mark">MC</div>
+      <div>
+        <div class="brand-name">Mercadeo Cali</div>
+        <div class="brand-sub">Catálogo de disponibilidad</div>
+      </div>
+    </div>
+    <button class="header-cta" id="headerWhatsapp" type="button">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1120.2 12 8.2 8.2 0 0112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.5.1-.5.8-.6.9-.2.2-.4.1a6.6 6.6 0 01-2-1.2 7.4 7.4 0 01-1.4-1.7c-.1-.2 0-.3.1-.4l.3-.4a1.5 1.5 0 00.2-.3.4.4 0 000-.4c-.1-.1-.5-1.3-.7-1.8s-.4-.4-.5-.4h-.5a.9.9 0 00-.6.3 2.8 2.8 0 00-.9 2.1 4.9 4.9 0 001 2.6 11.3 11.3 0 004.3 3.8c.6.2 1 .4 1.4.5a3.3 3.3 0 001.5.1 2.5 2.5 0 001.6-1.1 1.9 1.9 0 00.1-1.1c-.1-.1-.2-.1-.4-.2z"/></svg>
+      WhatsApp
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">Disponibilidad de hoy · Cali</p>
+    <h1>Tu pedido, directo a tu puerta<br><span class="accent">en Cali y alrededores.</span></h1>
+    <p class="hero-sub">Moteros, calzado y ropa con inventario real. Trabajamos con empresas de entrega confiable: pagas una parte al recibir el artículo y coordinamos todo por WhatsApp.</p>
+    <div class="trust">
+      <div class="trust-item"><span class="trust-dot"></span>Entrega a domicilio con transportadoras aliadas</div>
+      <div class="trust-item"><span class="trust-dot"></span>Pagas una parte al recibir, el resto se confirma por WhatsApp</div>
+      <div class="trust-item"><span class="trust-dot"></span>Catálogo actualizado a diario</div>
+    </div>
+  </section>
+
+  <div class="filters">
+    <div class="cat-row" id="catRow" role="tablist" aria-label="Categorías"></div>
+    <div class="subcat-row" id="subcatRow" role="tablist" aria-label="Subcategorías"></div>
+    <p class="result-count" id="resultCount"></p>
+  </div>
+
+  <section class="grid" id="grid"></section>
+</main>
+
+<button class="fab" id="fabWhatsapp" type="button">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1120.2 12 8.2 8.2 0 0112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.5.1-.5.8-.6.9-.2.2-.4.1a6.6 6.6 0 01-2-1.2 7.4 7.4 0 01-1.4-1.7c-.1-.2 0-.3.1-.4l.3-.4a1.5 1.5 0 00.2-.3.4.4 0 000-.4c-.1-.1-.5-1.3-.7-1.8s-.4-.4-.5-.4h-.5a.9.9 0 00-.6.3 2.8 2.8 0 00-.9 2.1 4.9 4.9 0 001 2.6 11.3 11.3 0 004.3 3.8c.6.2 1 .4 1.4.5a3.3 3.3 0 001.5.1 2.5 2.5 0 001.6-1.1 1.9 1.9 0 00.1-1.1c-.1-.1-.2-.1-.4-.2z"/></svg>
+  Escríbenos
+</button>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName">
+    <div class="sheet-top"><button class="sheet-close" id="sheetClose" aria-label="Cerrar" type="button">&times;</button></div>
+    <div class="sheet-media" id="sheetMedia"></div>
+    <div class="sheet-body">
+      <p class="sheet-cat" id="sheetCat"></p>
+      <h2 class="sheet-name" id="sheetName"></h2>
+      <div class="sheet-row">
+        <span class="sheet-price" id="sheetPrice"></span>
+        <span class="badge" id="sheetBadge"></span>
+      </div>
+      <p class="sheet-meta" id="sheetMeta"></p>
+      <div class="divider"></div>
+      <form id="leadForm" novalidate>
+        <div class="form-field">
+          <label class="form-label" for="fName">Nombre completo</label>
+          <input id="fName" name="nombre" type="text" autocomplete="name" required placeholder="Ej. Laura Gómez">
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="fPhone">Número de celular / WhatsApp</label>
+          <input id="fPhone" name="celular" type="tel" inputmode="numeric" autocomplete="tel" required placeholder="Ej. 3001234567">
+        </div>
+        <p class="form-error" id="formError">Revisa tu nombre y celular (10 dígitos).</p>
+        <button class="submit-btn" id="submitBtn" type="submit">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2z" opacity=".001"/><path d="M2.2 2.2l19.6 9.8-19.6 9.8 3.9-9.8-3.9-9.8z"/></svg>
+          Separar y hablar por WhatsApp
+        </button>
+        <p class="fine-print">Al continuar te escribiremos por WhatsApp para confirmar disponibilidad, talla y coordinar la entrega en Cali.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-row">
+    <div>
+      <div class="foot-brand">Mercadeo Cali</div>
+      <div class="foot-sub">Entrega a domicilio con transportadoras aliadas · Cali, Colombia</div>
+    </div>
+    <div class="foot-sub" id="footUpdated"></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= CONFIGURACIÓN ================= */
+  /* Edita estos 3 valores cuando publiques la página fuera de este artifact
+     (por ejemplo en GitHub Pages). Dentro de este artifact, el Pixel de Meta
+     y la hoja de cálculo NO pueden conectarse por el sandbox de vista previa;
+     el código ya queda listo y funciona en un hosting real. */
+  var CONFIG = {
+    WHATSAPP_NUMBER: "573000000000",       // Número en formato internacional sin "+" ni espacios
+    META_PIXEL_ID: "0000000000000000",      // ID de tu Pixel de Meta
+    SHEET_API_URL: ""                       // URL del Web App de Google Apps Script (Paso 2). Vacío = usa datos de muestra.
+  };
+
+  /* ================= DATOS DE MUESTRA =================
+     Mientras conectas SHEET_API_URL, el catálogo se alimenta de aquí.
+     Una vez conectada la hoja, estos datos se reemplazan automáticamente. */
+  var SAMPLE_PRODUCTS = [
+    {id:"p1", categoria:"Moteros", subcategoria:"Trajes impermeables", nombre:"Traje impermeable siliconado", talla:"XL", precio:85000, disponibilidad:"Disponible", icon:"rain"},
+    {id:"p2", categoria:"Moteros", subcategoria:"Chalecos reflectivos", nombre:"Chaleco reflectivo alta visibilidad", talla:"Única", precio:35000, disponibilidad:"Disponible", icon:"vest"},
+    {id:"p3", categoria:"Moteros", subcategoria:"Luces", nombre:"Luces LED direccionales (par)", talla:"Universal", precio:42000, disponibilidad:"Agotándose", icon:"light"},
+    {id:"p4", categoria:"Moteros", subcategoria:"Espejos", nombre:"Espejos retrovisores CNC", talla:"Universal", precio:65000, disponibilidad:"Bajo pedido", icon:"mirror"},
+    {id:"p5", categoria:"Moteros", subcategoria:"Guantes", nombre:"Guantes moto táctiles", talla:"M/L", precio:38000, disponibilidad:"Disponible", icon:"glove"},
+    {id:"p6", categoria:"Calzado", subcategoria:"Dama", nombre:"Zapatilla New Balance 720", talla:"36", precio:150000, disponibilidad:"Disponible", icon:"shoe"},
+    {id:"p7", categoria:"Calzado", subcategoria:"Caballero", nombre:"Zapatilla Nike Air Max", talla:"42", precio:160000, disponibilidad:"Agotándose", icon:"shoe"},
+    {id:"p8", categoria:"Calzado", subcategoria:"Dama", nombre:"Tenis Adidas Superstar", talla:"37", precio:130000, disponibilidad:"Disponible", icon:"shoe"},
+    {id:"p9", categoria:"Ropa", subcategoria:"Caballero", nombre:"Camiseta blanca Nike", talla:"M", precio:150000, disponibilidad:"Disponible", icon:"shirt"},
+    {id:"p10", categoria:"Ropa", subcategoria:"Caballero", nombre:"Buso oversize diseño nacional", talla:"L", precio:95000, disponibilidad:"Disponible", icon:"hoodie"},
+    {id:"p11", categoria:"Ropa", subcategoria:"Caballero", nombre:"Pantalón jogger", talla:"32", precio:80000, disponibilidad:"Disponible", icon:"pants"},
+    {id:"p12", categoria:"Ropa", subcategoria:"Dama", nombre:"Buso crop diseño nacional", talla:"S", precio:70000, disponibilidad:"Agotándose", icon:"hoodie"}
+  ];
+
+  var CATEGORIES = ["Todos","Moteros","Calzado","Ropa"];
+
+  var ICONS = {
+    rain:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 26c0-9 7-16 12-16s12 7 12 16" /><path d="M14 26h36l-4 20H18z"/><path d="M26 50l-3 8M38 50l-3 8M32 50l0 8" stroke="var(--accent)"/></g></svg>',
+    vest:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round"><path d="M20 14l10 6 10-6 8 8-6 6v24H18V28l-6-6z"/><path d="M26 18v30M38 18v30" stroke="var(--accent)"/></g></svg>',
+    light:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linecap="round"><circle cx="30" cy="32" r="14"/><path d="M44 32h10M46 24l7-5M46 40l7 5" stroke="var(--accent)"/></g></svg>',
+    mirror:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linecap="round"><path d="M32 10v8M20 44c0 8 6 12 12 12s12-4 12-12-6-14-12-14-12 6-12 14z"/><ellipse cx="32" cy="42" rx="10" ry="12" stroke="var(--accent)"/></g></svg>',
+    glove:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M22 30V16a4 4 0 018 0v10M30 28V14a4 4 0 018 0v14M38 28V18a4 4 0 018 0v16c0 10-6 18-16 18s-16-6-16-16v-8a4 4 0 018 0" stroke="var(--accent)"/></g></svg>',
+    shoe:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 44c0-6 4-9 10-11l8-10c3-3 6-3 9-1l9 7c4 3 8 4 14 4v10a3 3 0 01-3 3H13a3 3 0 01-3-3z"/><path d="M20 33l6 6M30 25l8 8" stroke="var(--accent)"/></g></svg>',
+    shirt:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round"><path d="M22 12l10 6 10-6 10 10-8 6v24H20V28l-8-6z"/><path d="M26 16a6 6 0 0012 0" stroke="var(--accent)"/></g></svg>',
+    hoodie:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M22 14c3-3 6-4 10-4s7 1 10 4l9 7-6 7-5-3v27H24V25l-5 3-6-7z"/><path d="M26 16c2 3 4 5 6 5s4-2 6-5" stroke="var(--accent)"/></g></svg>',
+    pants:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M18 10h28l2 16-4 26h-9l-3-24-3 24h-9l-4-26z"/><path d="M18 10h28" stroke="var(--accent)"/></g></svg>'
+  };
+
+  var BADGE_MAP = {
+    "Disponible": {cls:"ok", label:"Disponible"},
+    "Agotándose": {cls:"low", label:"Agotándose"},
+    "Bajo pedido": {cls:"order", label:"Bajo pedido"}
+  };
+
+  /* ================= ESTADO ================= */
+  var state = { category:"Todos", subcategory:"Todos", products:SAMPLE_PRODUCTS, activeProduct:null };
+
+  var money = function(n){ return "$" + n.toLocaleString("es-CO"); };
+
+  /* ================= META PIXEL =================
+     Snippet estándar de Meta. Dentro del artifact no cargará (dominio fuera del
+     sandbox de vista previa); en tu hosting real sí se ejecuta normalmente. */
+  (function(f,b,e,v,n,t,s){
+    if(f.fbq) return; n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq) f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0'; n.queue=[];
+    t=b.createElement(e); t.async=!0; t.src=v;
+    s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s);
+  })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+  try{
+    window.fbq && window.fbq('init', CONFIG.META_PIXEL_ID);
+    window.fbq && window.fbq('track', 'PageView');
+  }catch(e){}
+
+  function track(event, params){
+    try{ if(window.fbq) window.fbq('track', event, params || {}); }catch(e){}
+  }
+
+  /* ================= WHATSAPP ================= */
+  function waLink(message){
+    return "https://wa.me/" + CONFIG.WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
+  }
+  function openWhatsapp(message){
+    var a = document.createElement("a");
+    a.href = waLink(message); a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  document.getElementById("fabWhatsapp").addEventListener("click", function(){
+    track("Contact", {content_name:"WhatsApp flotante"});
+    openWhatsapp("Hola Mercadeo Cali, quiero ver qué tienen disponible hoy.");
+  });
+  document.getElementById("headerWhatsapp").addEventListener("click", function(){
+    track("Contact", {content_name:"WhatsApp header"});
+    openWhatsapp("Hola Mercadeo Cali, quiero ver qué tienen disponible hoy.");
+  });
+
+  /* ================= CARGA DE CATÁLOGO (Google Sheets) ================= */
+  function loadProducts(){
+    if(!CONFIG.SHEET_API_URL){ renderCategories(); renderProducts(); return; }
+    fetch(CONFIG.SHEET_API_URL + "?action=productos")
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(Array.isArray(data) && data.length){ state.products = data; }
+        renderCategories(); renderProducts();
+      })
+      .catch(function(){ renderCategories(); renderProducts(); });
+  }
+
+  /* ================= RENDER ================= */
+  function renderCategories(){
+    var catRow = document.getElementById("catRow");
+    catRow.innerHTML = "";
+    CATEGORIES.forEach(function(cat){
+      var btn = document.createElement("button");
+      btn.className = "cat-btn"; btn.type = "button"; btn.textContent = cat;
+      btn.setAttribute("aria-pressed", String(cat === state.category));
+      btn.addEventListener("click", function(){
+        state.category = cat; state.subcategory = "Todos";
+        renderCategories(); renderSubcategories(); renderProducts();
+      });
+      catRow.appendChild(btn);
+    });
+    renderSubcategories();
+  }
+
+  function renderSubcategories(){
+    var subRow = document.getElementById("subcatRow");
+    subRow.innerHTML = "";
+    if(state.category === "Todos"){ return; }
+    var subs = ["Todos"];
+    state.products.forEach(function(p){
+      if(p.categoria === state.category && subs.indexOf(p.subcategoria) === -1) subs.push(p.subcategoria);
+    });
+    if(subs.length <= 1) return;
+    subs.forEach(function(sub){
+      var btn = document.createElement("button");
+      btn.className = "sub-btn"; btn.type = "button"; btn.textContent = sub;
+      btn.setAttribute("aria-pressed", String(sub === state.subcategory));
+      btn.addEventListener("click", function(){
+        state.subcategory = sub; renderSubcategories(); renderProducts();
+      });
+      subRow.appendChild(btn);
+    });
+  }
+
+  function filteredProducts(){
+    return state.products.filter(function(p){
+      if(state.category !== "Todos" && p.categoria !== state.category) return false;
+      if(state.subcategory !== "Todos" && p.subcategoria !== state.subcategory) return false;
+      return true;
+    });
+  }
+
+  function renderProducts(){
+    var grid = document.getElementById("grid");
+    var list = filteredProducts();
+    document.getElementById("resultCount").textContent = list.length + (list.length === 1 ? " artículo disponible" : " artículos disponibles");
+    grid.innerHTML = "";
+    if(!list.length){
+      grid.innerHTML = '<p class="empty">No hay artículos en esta categoría por ahora. Vuelve pronto, el inventario cambia a diario.</p>';
+      return;
+    }
+    list.forEach(function(p){
+      var badge = BADGE_MAP[p.disponibilidad] || BADGE_MAP["Disponible"];
+      var card = document.createElement("button");
+      card.className = "card"; card.type = "button";
+      var media = p.foto ? '<img src="' + p.foto + '" alt="' + p.nombre + '" loading="lazy">' : (ICONS[p.icon] || ICONS.shirt);
+      card.innerHTML =
+        '<div class="card-media"><span class="badge ' + badge.cls + '">' + badge.label + '</span>' + media + '</div>' +
+        '<div class="card-body">' +
+          '<span class="card-cat">' + p.subcategoria + '</span>' +
+          '<span class="card-name">' + p.nombre + '</span>' +
+          '<span class="card-meta">Talla ' + p.talla + '</span>' +
+          '<div class="card-foot"><span class="card-price">' + money(p.precio) + '</span><span class="card-btn">Ver</span></div>' +
+        '</div>';
+      card.addEventListener("click", function(){ openProduct(p); });
+      grid.appendChild(card);
+    });
+  }
+
+  /* ================= FICHA / MODAL ================= */
+  var overlay = document.getElementById("overlay");
+
+  function openProduct(p){
+    state.activeProduct = p;
+    var badge = BADGE_MAP[p.disponibilidad] || BADGE_MAP["Disponible"];
+    document.getElementById("sheetMedia").innerHTML = p.foto
+      ? '<img src="' + p.foto + '" alt="' + p.nombre + '">'
+      : (ICONS[p.icon] || ICONS.shirt);
+    document.getElementById("sheetCat").textContent = p.categoria + " · " + p.subcategoria;
+    document.getElementById("sheetName").textContent = p.nombre;
+    document.getElementById("sheetPrice").textContent = money(p.precio);
+    var b = document.getElementById("sheetBadge");
+    b.textContent = badge.label; b.className = "badge " + badge.cls;
+    document.getElementById("sheetMeta").textContent = "Talla disponible: " + p.talla + ". Entrega a domicilio con transportadora aliada: pagas una parte al recibir el artículo y confirmamos los detalles por WhatsApp.";
+    document.getElementById("formError").style.display = "none";
+    document.getElementById("leadForm").reset();
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    track("ViewContent", {
+      content_name: p.nombre, content_category: p.categoria + " / " + p.subcategoria,
+      content_ids:[p.id], value: p.precio, currency:"COP"
+    });
+  }
+
+  function closeModal(){
+    overlay.hidden = true; document.body.style.overflow = "";
+  }
+  document.getElementById("sheetClose").addEventListener("click", closeModal);
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) closeModal(); });
+
+  /* ================= ENVÍO DE LEAD ================= */
+  function validPhone(v){ return /^[0-9]{7,12}$/.test(v.replace(/\s|-/g, "")); }
+
+  document.getElementById("leadForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var nombre = document.getElementById("fName").value.trim();
+    var celular = document.getElementById("fPhone").value.trim().replace(/\s|-/g, "");
+    var errorEl = document.getElementById("formError");
+    if(nombre.length < 3 || !validPhone(celular)){
+      errorEl.style.display = "block"; return;
+    }
+    errorEl.style.display = "none";
+    var p = state.activeProduct;
+    var btn = document.getElementById("submitBtn");
+    btn.disabled = true; btn.textContent = "Enviando...";
+
+    var lead = {
+      nombre: nombre, celular: celular,
+      producto: p.nombre, categoria: p.categoria, subcategoria: p.subcategoria,
+      talla: p.talla, precio: p.precio,
+      pagina: "catalogo", fecha: new Date().toISOString()
+    };
+
+    track("Lead", {
+      content_name: p.nombre, content_category: p.categoria,
+      value: p.precio, currency:"COP"
+    });
+
+    sendLeadToSheet(lead).finally(function(){
+      var msg = "Hola Mercadeo Cali! Soy " + nombre + ". Me interesa: " + p.nombre +
+        " (talla " + p.talla + ", " + money(p.precio) + "). Mi celular: " + celular;
+      closeModal();
+      btn.disabled = false; btn.textContent = "Separar y hablar por WhatsApp";
+      openWhatsapp(msg);
+    });
+  });
+
+  function sendLeadToSheet(lead){
+    if(!CONFIG.SHEET_API_URL) return Promise.resolve();
+    return fetch(CONFIG.SHEET_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // evita preflight CORS con Apps Script
+      body: JSON.stringify(lead)
+    }).catch(function(){ /* si falla el guardado, igual seguimos a WhatsApp */ });
+  }
+
+  /* ================= INIT ================= */
+  document.getElementById("footUpdated").textContent = "Vista el " + new Date().toLocaleDateString("es-CO", {day:"numeric", month:"long", year:"numeric"});
+  loadProducts();
+
+  /* Re-pintado en caliente al republicar (viewers abiertos conservan el estado del modal) */
+  if(window.claude && window.claude.hot){
+    try{
+      window.claude.hot.snapshot(function(){ return { category: state.category, subcategory: state.subcategory }; });
+      var boot = function(saved){
+        if(saved && saved.category){ state.category = saved.category; state.subcategory = saved.subcategory || "Todos"; }
+      };
+      window.claude.hot.ready ? window.claude.hot.ready(boot) : boot(window.claude.hot.data || {});
+    }catch(e){}
+  }
+})();
+</script>
