@@ -650,9 +650,11 @@
       fotos: parsePhotos(raw.fotos || raw.foto || raw.foto_producto || raw["Foto Producto"])
     };
     if(!p.nombre) return null;
-    // precio_normal solo cuenta si es mayor que el precio de hoy
-    var pn = Number(String(raw.precio_normal == null ? "" : raw.precio_normal).replace(/[^\d]/g, "")) || 0;
-    p.precioNormal = (pn > p.precio && p.precio > 0) ? pn : 0;
+    // "precio" = precio normal. "precio_promo" = promoción temporal: solo cuenta si es menor que el normal.
+    // Con promoción, p.precio pasa a ser el precio de promoción (el que se cobra) y p.precioNormal el tachado.
+    var promo = Number(String(raw.precio_promo == null ? "" : raw.precio_promo).replace(/[^\d]/g, "")) || 0;
+    p.precioNormal = 0;
+    if(promo > 0 && p.precio > 0 && promo < p.precio){ p.precioNormal = p.precio; p.precio = promo; }
     var tallasRaw = raw.tallas != null && raw.tallas !== "" ? raw.tallas : raw.talla;
     p.tallasTokens = splitList(tallasRaw, /[,;|\/]/);
     if(!p.tipo_talla) p.tipo_talla = inferTipoTalla(p);

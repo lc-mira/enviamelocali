@@ -30,7 +30,7 @@ Las columnas actuales (`id`, `categoria`, `subcategoria`, `nombre`, `talla`, `pr
 | `material`, `peso_gr` | Opcionales: `Cuero`, `450` (se muestran en la ficha) |
 | `en_meta` | `SI` solo para lo que debe ir al catálogo de Meta. Vacío = excluido |
 | `marca` | Opcional, solo para el feed de Meta |
-| `precio_normal` | Precio normal (el de la calle). Si es mayor que `precio`, la página lo muestra tachado como "Precio normal", con el precio de hoy en rojo y "Ahorras $X". Vacío = sin descuento. El pedido, el anticipo, el mensaje de WhatsApp y los eventos de Meta siempre usan `precio` |
+| `precio_promo` | Precio de promoción temporal. `precio` es siempre el precio normal. Si `precio_promo` tiene un valor menor que `precio`, la página muestra el "Precio normal" tachado, el precio de promoción en rojo y "Ahorras $X", y el pedido, el anticipo, el mensaje de WhatsApp y los eventos de Meta usan el precio de promoción. Para terminar la promoción, borra el valor de `precio_promo` |
 | `destacado` | `SI` para mostrarlo en la fila "Más pedidos" y en el banner de la portada |
 | `costo`, `mayorista`, `notas` | Privadas. El script nunca las publica |
 
@@ -65,7 +65,7 @@ El evento `Purchase` es el que permite pedirle a Meta que optimice los anuncios 
 
 ## Feed de Meta (Fase 2)
 
-`URL?action=feed` devuelve un CSV con solo los productos `en_meta = SI`. Si el producto tiene `precio_normal`, el feed envía `price` = precio normal y `sale_price` = precio de hoy. Se carga en Commerce Manager como fuente de datos programada. Los enlaces de productos usan `?p=ID`, y el Pixel envía el mismo `id` en `content_ids`.
+`URL?action=feed` devuelve un CSV con solo los productos `en_meta = SI`. Si el producto tiene `precio_promo`, el feed envía `price` = `precio` (normal) y `sale_price` = `precio_promo`. Se carga en Commerce Manager como fuente de datos programada. Los enlaces de productos usan `?p=ID`, y el Pixel envía el mismo `id` en `content_ids`.
 
 ## Diseño y marca
 
