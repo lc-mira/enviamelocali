@@ -231,6 +231,15 @@
   .card-foot{display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:7px}
   .card-price{font-family:var(--font-display); font-weight:600; font-size:17px; font-variant-numeric:tabular-nums}
   .card-btn{background:var(--red); color:#fff; border-radius:8px; padding:7px 11px; font-size:11.5px; font-weight:700}
+  .price-col{display:flex; flex-direction:column; line-height:1.1}
+  .price-old{font-size:12px; font-weight:500; color:var(--ink-faint); text-decoration:line-through}
+  .price-old.inline{margin-left:6px}
+  .card-price.sale, .sheet-price.sale{color:var(--red-dark)}
+  .save-tag{position:absolute; top:8px; right:8px; z-index:2; background:var(--red); color:#fff; font-size:10.5px; font-weight:700; padding:4px 8px; border-radius:999px}
+  .sheet-old{font-size:13px; color:var(--ink-faint); margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .sheet-old s{color:var(--ink-faint)}
+  .save-pill{background:var(--red-soft); color:var(--red-dark); font-weight:700; font-size:12px; padding:3px 9px; border-radius:999px}
+  .totals .ahorro{color:var(--ok); font-weight:600}
   .skel{height:260px; border-radius:var(--radius); background:linear-gradient(100deg,var(--tile) 30%,var(--surface) 50%,var(--tile) 70%); background-size:200% 100%; animation:shimmer 1.3s linear infinite}
   @keyframes shimmer{to{background-position:-200% 0}}
   .empty{grid-column:1/-1; padding:50px 10px; text-align:center; color:var(--ink-soft); line-height:1.5}
@@ -445,6 +454,7 @@
         <span class="sheet-price" id="sheetPrice"></span>
         <span class="badge" id="sheetBadge"></span>
       </div>
+      <p class="sheet-old" id="sheetOld" hidden></p>
       <p class="sheet-desc" id="sheetDesc"></p>
       <div class="sheet-facts" id="sheetFacts"></div>
 
@@ -646,6 +656,9 @@
       fotos: parsePhotos(raw.fotos || raw.foto || raw.foto_producto || raw["Foto Producto"])
     };
     if(!p.nombre) return null;
+    // precio_normal solo cuenta si es mayor que el precio de hoy
+    var pn = Number(String(raw.precio_normal == null ? "" : raw.precio_normal).replace(/[^\d]/g, "")) || 0;
+    p.precioNormal = (pn > p.precio && p.precio > 0) ? pn : 0;
     var tallasRaw = raw.tallas != null && raw.tallas !== "" ? raw.tallas : raw.talla;
     p.tallasTokens = splitList(tallasRaw, /[,;|\/]/);
     if(!p.tipo_talla) p.tipo_talla = inferTipoTalla(p);
@@ -682,6 +695,8 @@
     return {mode:"ask", label:"Talla", options:[]};
   }
 
+  function savings(p){ return p.precioNormal ? p.precioNormal - p.precio : 0; }
+  function pctOff(p){ return p.precioNormal ? Math.round((1 - p.precio / p.precioNormal) * 100) : 0; }
   function badgeFor(p){ return BADGE_MAP[norm(p.disponibilidad)] || BADGE_MAP["disponible"]; }
   function mediaFor(p){
     if(p.fotos.length) return '<img src="' + esc(p.fotos[0]) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
@@ -882,12 +897,16 @@
     var si = sizeInfo(p);
     var meta = si.mode === "fixed" ? si.fixed : (si.mode === "select" ? "Tallas disponibles" : "");
     card.innerHTML =
-      '<div class="card-media" data-pid="' + esc(p.id) + '"><span class="badge ' + badge.cls + '">' + badge.label + '</span>' + mediaFor(p) + '</div>' +
+      '<div class="card-media" data-pid="' + esc(p.id) + '"><span class="badge ' + badge.cls + '">' + badge.label + '</span>' +
+        (p.precioNormal ? '<span class="save-tag">−' + pctOff(p) + '%</span>' : '') + mediaFor(p) + '</div>' +
       '<div class="card-body">' +
         '<span class="card-cat">' + esc(p.subcategoria || p.categoria) + '</span>' +
         '<span class="card-name">' + esc(p.nombre) + '</span>' +
         (meta ? '<span class="card-meta">' + esc(meta) + '</span>' : '') +
-        '<div class="card-foot"><span class="card-price">' + (p.precio ? money(p.precio) : "Consultar") + '</span><span class="card-btn">Ver</span></div>' +
+        '<div class="card-foot"><span class="price-col">' +
+          (p.precioNormal ? '<s class="price-old"><span class="sr-only">Precio normal </span>' + money(p.precioNormal) + '</s>' : '') +
+          '<span class="card-price' + (p.precioNormal ? ' sale' : '') + '">' + (p.precio ? money(p.precio) : "Consultar") + '</span></span>' +
+          '<span class="card-btn">Ver</span></div>' +
       '</div>';
     card.addEventListener("click", function(){ openProduct(p); });
     return card;
@@ -1046,6 +1065,14 @@
     $("sheetCat").textContent = p.categoria + (p.subcategoria ? " · " + p.subcategoria : "");
     $("sheetName").textContent = p.nombre;
     $("sheetPrice").textContent = p.precio ? money(p.precio) : "Consultar precio";
+    var old = $("sheetOld");
+    if(p.precioNormal){
+      old.hidden = false;
+      old.innerHTML = 'Precio normal <s>' + money(p.precioNormal) + '</s> <span class="save-pill">Ahorras ' + money(savings(p)) + ' (' + pctOff(p) + '%)</span>';
+      $("sheetPrice").classList.add("sale");
+    } else {
+      old.hidden = true; old.innerHTML = ""; $("sheetPrice").classList.remove("sale");
+    }
     var b = $("sheetBadge"); b.textContent = badge.label; b.className = "badge " + badge.cls;
     $("sheetDesc").textContent = p.descripcion;
     $("sheetDesc").style.display = p.descripcion ? "block" : "none";
@@ -1112,7 +1139,7 @@
       if(showErrors) toast($("formError"), "Elige " + (si.mode === "select" && !state.selSize ? "tu talla" : "el color") + " para continuar.");
       return null;
     }
-    return {id:p.id, nombre:p.nombre, categoria:p.categoria, subcategoria:p.subcategoria, precio:p.precio,
+    return {id:p.id, nombre:p.nombre, categoria:p.categoria, subcategoria:p.subcategoria, precio:p.precio, normal:p.precioNormal || 0,
             talla: state.selSize || "", color: state.selColor || "", foto: p.fotos[0] || "", icon: p.icon};
   }
 
@@ -1145,6 +1172,7 @@
 
   var listOverlay = $("listOverlay");
   function listTotal(){ return state.list.reduce(function(s, i){ return s + i.precio; }, 0); }
+  function listSavings(items){ return items.reduce(function(s, i){ return s + (i.normal > i.precio ? i.normal - i.precio : 0); }, 0); }
 
   function renderList(){
     var box = $("listItems");
@@ -1162,15 +1190,17 @@
       row.innerHTML = '<div class="list-thumb" data-pid="' + esc(it.id) + '">' + thumb + '</div>' +
         '<div class="list-info"><div class="list-name">' + esc(it.nombre) + '</div>' +
         (vars ? '<div class="list-var">' + esc(vars) + '</div>' : '') +
-        '<div class="list-price">' + (it.precio ? money(it.precio) : "Consultar") + '</div></div>';
+        '<div class="list-price">' + (it.precio ? money(it.precio) : "Consultar") +
+        (it.normal > it.precio ? ' <s class="price-old inline">' + money(it.normal) + '</s>' : '') + '</div></div>';
       var rm = document.createElement("button");
       rm.className = "list-remove"; rm.type = "button"; rm.setAttribute("aria-label", "Quitar " + it.nombre); rm.textContent = "×";
       rm.addEventListener("click", function(){ state.list.splice(idx, 1); saveList(); renderList(); });
       row.appendChild(rm); box.appendChild(row);
     });
-    var total = listTotal(), rest = Math.max(total - CONFIG.ANTICIPO, 0);
+    var total = listTotal(), rest = Math.max(total - CONFIG.ANTICIPO, 0), ahorro = listSavings(state.list);
     $("listTotals").innerHTML =
       '<div><span>Total productos (' + state.list.length + ')</span><span>' + money(total) + '</span></div>' +
+      (ahorro ? '<div class="ahorro"><span>Ahorras vs. precio normal</span><span>' + money(ahorro) + '</span></div>' : '') +
       '<div><span>Anticipo para separar</span><span>− ' + money(CONFIG.ANTICIPO) + '</span></div>' +
       '<div class="big"><span>Por pagar al recibir</span><span>' + money(rest) + '</span></div>';
     $("listAnticipo").innerHTML = 'Un solo anticipo de <strong>' + money(CONFIG.ANTICIPO) + '</strong> separa todo tu pedido y <strong>se descuenta del total</strong>.';
@@ -1195,6 +1225,8 @@
     var total = items.reduce(function(s, i){ return s + i.precio; }, 0);
     var msg = "Hola " + CONFIG.BRAND + "! Soy " + nombre + ". Quiero separar:\n" + items.map(itemLine).join("\n");
     if(total) msg += "\nTotal: " + money(total) + " · Anticipo: " + money(CONFIG.ANTICIPO);
+    var ahorro = listSavings(items);
+    if(ahorro) msg += "\nAhorro vs. precio normal: " + money(ahorro);
     msg += "\nMi celular: " + celular;
     if(items.length === 1) msg += "\n" + CONFIG.SITE_URL + "?p=" + encodeURIComponent(items[0].id);
     var ref = attribution.utm_campaign || attribution.utm_source || "";

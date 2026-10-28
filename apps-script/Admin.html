@@ -174,8 +174,13 @@
         </div>
         <div>
           <label for="fPrecio">Precio (COP)</label>
-          <input type="number" id="fPrecio" placeholder="85000">
+          <input type="number" id="fPrecio" placeholder="40000">
         </div>
+      </div>
+      <div>
+        <label for="fPrecioNormal">Precio normal (tachado) — opcional</label>
+        <input type="number" id="fPrecioNormal" placeholder="45000">
+        <small style="color:#666">Vacío = sin descuento. Debe ser mayor que el precio de hoy.</small>
       </div>
 
       <label for="fDisponibilidad">Disponibilidad</label>
@@ -475,6 +480,7 @@
     document.getElementById("fNombre").value = p.nombre;
     document.getElementById("fTalla").value = p.talla;
     document.getElementById("fPrecio").value = p.precio;
+    document.getElementById("fPrecioNormal").value = p.precio_normal || "";
     document.getElementById("fDisponibilidad").value = p.disponibilidad;
     document.getElementById("fTipoTalla").value = String(p.tipo_talla || "").toLowerCase();
     document.getElementById("fTallas").value = p.tallas || "";
@@ -501,6 +507,7 @@
     document.getElementById("fNombre").value = "";
     document.getElementById("fTalla").value = "";
     document.getElementById("fPrecio").value = "";
+    document.getElementById("fPrecioNormal").value = "";
     document.getElementById("fDisponibilidad").value = "Disponible";
     ["fTipoTalla","fTallas","fColores","fDescripcion","fTiempo","fMaterial","fPeso","fEnMeta","fDestacado"].forEach(function(id){
       document.getElementById(id).value = "";
@@ -610,6 +617,11 @@
       mostrarToast("Completa al menos ID, nombre y precio", true);
       return;
     }
+    var pn = document.getElementById("fPrecioNormal").value;
+    if(pn && Number(pn) <= Number(precio)){
+      mostrarToast("El precio normal debe ser mayor que el precio de hoy (o déjalo vacío)", true);
+      return;
+    }
 
     var producto = {
       id: id,
@@ -624,6 +636,7 @@
       tallas: document.getElementById("fTallas").value.trim(),
       colores: document.getElementById("fColores").value.trim(),
       descripcion: document.getElementById("fDescripcion").value.trim(),
+      precio_normal: document.getElementById("fPrecioNormal").value.trim(),
       tiempo_entrega: document.getElementById("fTiempo").value.trim(),
       material: document.getElementById("fMaterial").value.trim(),
       peso_gr: document.getElementById("fPeso").value.trim(),

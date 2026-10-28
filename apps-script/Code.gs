@@ -31,7 +31,7 @@ var META_API_VERSION = "v19.0"; // revisa en developers.facebook.com cuál es la
 var PRODUCT_COLUMNS = [
   "id", "categoria", "subcategoria", "nombre", "talla", "precio", "disponibilidad", "icon", "Foto Producto",
   "activo", "descripcion", "tipo_talla", "tallas", "colores", "tiempo_entrega", "material", "peso_gr",
-  "en_meta", "marca", "destacado", "costo", "mayorista", "notas"
+  "en_meta", "marca", "destacado", "costo", "mayorista", "notas", "precio_normal"
 ];
 
 // Columnas de la hoja "Leads". Las 12 primeras son las de siempre; el resto se agregan al final.
@@ -60,7 +60,7 @@ ETAPA_EVENTOS[ETAPA_GANADO] = { evento: "Purchase", colEnviado: "CAPI_Compra", c
 var ADMIN_FIELDS = [
   "categoria", "subcategoria", "nombre", "talla", "precio", "disponibilidad", "icon",
   "descripcion", "tipo_talla", "tallas", "colores", "tiempo_entrega", "material", "peso_gr",
-  "activo", "en_meta", "marca", "destacado"
+  "activo", "en_meta", "marca", "destacado", "precio_normal"
 ];
 
 /* =========================================================
@@ -257,7 +257,7 @@ function leerProductos() {
         tipo_talla: txt_(r.tipo_talla), colores: txt_(r.colores),
         tiempo_entrega: txt_(r.tiempo_entrega), material: txt_(r.material), peso_gr: txt_(r.peso_gr),
         destacado: txt_(r.destacado),
-        precio: precio_(r.precio), disponibilidad: r.disponibilidad,
+        precio: precio_(r.precio), precio_normal: precio_(r.precio_normal), disponibilidad: r.disponibilidad,
         icon: r.icon || "shirt",
         fotos: fotos.map(function (f) { return f.url; }), // URLs listas para el sitio público
         foto: fotos.length ? fotos[0].url : "" // compatibilidad hacia atrás
@@ -268,7 +268,7 @@ function leerProductos() {
 /* ---------------- Feed CSV para el catálogo de Meta ---------------- */
 function generarFeed_() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_PRODUCTOS);
-  var lines = ["id,title,description,availability,condition,price,link,image_link,additional_image_link,brand"];
+  var lines = ["id,title,description,availability,condition,price,sale_price,link,image_link,additional_image_link,brand"];
   leerFilas_(sheet).forEach(function (r) {
     if (r.id === undefined || String(r.id) === "" || !esActivo_(r)) return;
     // Lista blanca estricta: solo entra lo marcado explícitamente con SI. Vacío = excluido (réplicas).
@@ -276,10 +276,14 @@ function generarFeed_() {
     var fotos = parseFotos_(r.foto_producto !== undefined ? r.foto_producto : r.fotos).map(function (f) { return f.url; });
     var precio = precio_(r.precio);
     if (!fotos.length || !precio || !r.nombre) return; // Meta exige imagen y precio
+    // Con descuento: price = precio normal, sale_price = precio de hoy (Meta muestra el tachado)
+    var normal = precio_(r.precio_normal);
+    var enOferta = normal > precio;
     var disp = String(r.disponibilidad || "").toLowerCase();
     var availability = disp.indexOf("bajo pedido") > -1 ? "available for order" : "in stock";
     lines.push([
-      r.id, r.nombre, txt_(r.descripcion) || (r.nombre + " - " + r.categoria), availability, "new", precio + ".00 COP",
+      r.id, r.nombre, txt_(r.descripcion) || (r.nombre + " - " + r.categoria), availability, "new",
+      (enOferta ? normal : precio) + ".00 COP", enOferta ? precio + ".00 COP" : "",
       SITE_URL + "?p=" + encodeURIComponent(r.id), fotos[0], fotos.slice(1, 10).join(","),
       txt_(r.marca) || BRAND_DEFAULT
     ].map(csvCell_).join(","));
@@ -566,7 +570,7 @@ function guardarProducto(code, producto) {
   poner("id", producto.id);
   ADMIN_FIELDS.forEach(function (k) {
     if (producto[k] === undefined) return; // no vino: se conserva lo que había
-    poner(k, k === "precio" ? (Number(producto.precio) || 0) : String(producto[k] === null ? "" : producto[k]).trim());
+    poner(k, (k === "precio" || k === "precio_normal") ? (Number(producto[k]) || (k === "precio" ? 0 : "")) : String(producto[k] === null ? "" : producto[k]).trim());
   });
 
   if (fila <= 0) { // producto nuevo: valores por defecto
