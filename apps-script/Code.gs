@@ -1,5 +1,5 @@
 /**
- * MERCADEO CALI — Backend de Google Apps Script (versión fusionada)
+ * ENVIAMELO CALI — Backend de Google Apps Script (versión fusionada)
  * ------------------------------------------------------------
  * Hace 5 cosas:
  *  1) doGet()  -> entrega el catálogo (hoja "Productos") como JSON al sitio web
@@ -23,7 +23,7 @@ var SHEET_PRODUCTOS = "Productos";
 var SHEET_LEADS = "Leads";
 var DRIVE_ROOT_FOLDER_NAME = "Mercadeo Cali - Fotos";
 var SITE_URL = "https://lc-mira.github.io/enviamelocali/";
-var BRAND_DEFAULT = "Mercadeo Cali";
+var BRAND_DEFAULT = "Enviamelo Cali";
 var META_API_VERSION = "v19.0"; // revisa en developers.facebook.com cuál es la vigente y actualízala aquí
 
 // Columnas de la hoja "Productos". Las 9 primeras son las de siempre (mismo orden);
@@ -31,7 +31,7 @@ var META_API_VERSION = "v19.0"; // revisa en developers.facebook.com cuál es la
 var PRODUCT_COLUMNS = [
   "id", "categoria", "subcategoria", "nombre", "talla", "precio", "disponibilidad", "icon", "Foto Producto",
   "activo", "descripcion", "tipo_talla", "tallas", "colores", "tiempo_entrega", "material", "peso_gr",
-  "en_meta", "marca", "costo", "mayorista", "notas"
+  "en_meta", "marca", "destacado", "costo", "mayorista", "notas"
 ];
 
 // Columnas de la hoja "Leads". Las 12 primeras son las de siempre; el resto se agregan al final.
@@ -60,7 +60,7 @@ ETAPA_EVENTOS[ETAPA_GANADO] = { evento: "Purchase", colEnviado: "CAPI_Compra", c
 var ADMIN_FIELDS = [
   "categoria", "subcategoria", "nombre", "talla", "precio", "disponibilidad", "icon",
   "descripcion", "tipo_talla", "tallas", "colores", "tiempo_entrega", "material", "peso_gr",
-  "activo", "en_meta", "marca"
+  "activo", "en_meta", "marca", "destacado"
 ];
 
 /* =========================================================
@@ -68,7 +68,7 @@ var ADMIN_FIELDS = [
    ========================================================= */
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu("Mercadeo Cali")
+    .createMenu("Enviamelo Cali")
     .addItem("🎛️ Ver enlace del panel de administración", "mostrarEnlacePanel")
     .addItem("📣 Ver enlace del feed de Meta", "mostrarEnlaceFeed")
     .addSeparator()
@@ -206,7 +206,7 @@ function doGet(e) {
 
   if (page === "admin") {
     return HtmlService.createTemplateFromFile("Admin").evaluate()
-      .setTitle("Panel · Mercadeo Cali")
+      .setTitle("Panel · Enviamelo Cali")
       .addMetaTag("viewport", "width=device-width, initial-scale=1")
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
   }
@@ -221,7 +221,7 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.CSV);
   }
 
-  return ContentService.createTextOutput(JSON.stringify({ ok: true, servicio: "Mercadeo Cali API" }))
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, servicio: "Enviamelo Cali API" }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -256,6 +256,7 @@ function leerProductos() {
         descripcion: txt_(r.descripcion), talla: txt_(r.talla), tallas: txt_(r.tallas),
         tipo_talla: txt_(r.tipo_talla), colores: txt_(r.colores),
         tiempo_entrega: txt_(r.tiempo_entrega), material: txt_(r.material), peso_gr: txt_(r.peso_gr),
+        destacado: txt_(r.destacado),
         precio: precio_(r.precio), disponibilidad: r.disponibilidad,
         icon: r.icon || "shirt",
         fotos: fotos.map(function (f) { return f.url; }), // URLs listas para el sitio público
@@ -415,7 +416,7 @@ function enviarEventoCAPI(eventName, lead) {
   var testCode = props.getProperty("META_TEST_EVENT_CODE");
 
   if (!pixelId || !token) {
-    return { ok: false, error: "Faltan credenciales. Usa el menú Mercadeo Cali > Configurar credenciales de Meta." };
+    return { ok: false, error: "Faltan credenciales. Usa el menú Enviamelo Cali > Configurar credenciales de Meta." };
   }
 
   var celularLimpio = String(lead.celular || "").replace(/\D/g, "");
@@ -489,7 +490,7 @@ function sha256(text) {
 function probarConexionMeta() {
   var ui = SpreadsheetApp.getUi();
   var leadPrueba = {
-    nombre: "Prueba Mercadeo Cali", celular: "3001234567",
+    nombre: "Prueba Enviamelo Cali", celular: "3001234567",
     producto: "Producto de prueba", categoria: "Moteros", precio: 50000
   };
   var resultado = enviarEventoCAPI("LeadCalificado", leadPrueba);
@@ -506,7 +507,7 @@ function probarConexionMeta() {
 function validarCodigo_(code) {
   var props = PropertiesService.getScriptProperties();
   var real = props.getProperty("ADMIN_ACCESS_CODE");
-  if (!real) throw new Error("Primero configura un código de acceso desde el menú Mercadeo Cali > Configurar código de acceso del panel.");
+  if (!real) throw new Error("Primero configura un código de acceso desde el menú Enviamelo Cali > Configurar código de acceso del panel.");
   if (String(code) !== String(real)) throw new Error("Código incorrecto.");
   return true;
 }

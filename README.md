@@ -1,4 +1,4 @@
-# Mercadeo Cali — catálogo de ventas
+# Enviamelo Cali — catálogo de ventas
 
 Sitio estático (GitHub Pages) que muestra el catálogo desde Google Sheets y lleva al cliente a WhatsApp, donde se cierra la venta con un anticipo de separación.
 
@@ -30,6 +30,7 @@ Las columnas actuales (`id`, `categoria`, `subcategoria`, `nombre`, `talla`, `pr
 | `material`, `peso_gr` | Para joyas: `Plata 925`, `4.5` |
 | `en_meta` | `SI` solo para lo que debe ir al catálogo de Meta. Vacío = excluido |
 | `marca` | Opcional, solo para el feed de Meta |
+| `destacado` | `SI` para mostrarlo en la fila "Más pedidos" y en el banner de la portada |
 | `costo`, `mayorista`, `notas` | Privadas. El script nunca las publica |
 
 `disponibilidad`: `Disponible`, `Agotándose` o `Bajo pedido`.
@@ -46,7 +47,7 @@ El proyecto de Apps Script tiene dos archivos, y ambos están en `apps-script/`:
 
 1. Haz una copia de seguridad: en la hoja, Archivo → Hacer una copia.
 2. En la hoja: Extensiones → Apps Script. Reemplaza el contenido de `Code.gs` y de `Admin.html` por los de `apps-script/`. Las credenciales de Meta, el código del panel y el disparador "al editar" quedan guardados aparte y no se pierden.
-3. Guarda, recarga la hoja y usa el menú Mercadeo Cali → "Crear/ordenar hojas". Agrega las columnas nuevas al final sin borrar datos.
+3. Guarda, recarga la hoja y usa el menú Enviamelo Cali → "Crear/ordenar hojas". Agrega las columnas nuevas al final sin borrar datos.
 4. Implementar → Administrar implementaciones → ícono de lápiz → Versión: **Nueva versión** → Implementar. Así la URL no cambia.
 5. Prueba en el navegador: `URL?action=productos` debe mostrar el JSON, y `URL?page=admin` abre el panel.
 
@@ -64,6 +65,14 @@ El evento `Purchase` es el que permite pedirle a Meta que optimice los anuncios 
 ## Feed de Meta (Fase 2)
 
 `URL?action=feed` devuelve un CSV con solo los productos `en_meta = SI`. Se carga en Commerce Manager como fuente de datos programada. Los enlaces de productos usan `?p=ID`, y el Pixel envía el mismo `id` en `content_ids`.
+
+## Diseño y marca
+
+Marca **Enviamelo Cali**: rojo `#D71920`, grafito `#17181B` y blanco. El verde se usa solo para los botones de WhatsApp. Los colores están al inicio del CSS de `index.html` (`:root`).
+
+Las fotos con fondo blanco se muestran completas (sin recortar) sobre una tarjeta gris claro (`--tile`, `#EDEEF0`) con `mix-blend-mode: multiply`, así el blanco de la foto se funde con la tarjeta. Si algún día el gris no te gusta, se cambia en `--tile`.
+
+Enlaces para anuncios: `?c=Moteros` abre el catálogo ya filtrado por esa categoría, y `?p=ID` abre directamente un producto.
 
 ## Medición
 

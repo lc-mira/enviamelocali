@@ -4,7 +4,7 @@
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Panel · Mercadeo Cali</title>
+  <title>Panel · Enviamelo Cali</title>
   <style>
     :root{
       --bg:#F3F3F1; --surface:#FFFFFF; --surface-2:#ECECE9;
@@ -132,7 +132,7 @@
 <body>
 
 <div id="loginView" class="login-box">
-  <h2>🔒 Panel Mercadeo Cali</h2>
+  <h2>🔒 Panel Enviamelo Cali</h2>
   <p>Escribe tu código de acceso para administrar el catálogo.</p>
   <input type="text" id="codeInput" placeholder="Código de acceso" style="text-align:center; letter-spacing:2px">
   <button class="btn-primary" id="loginBtn" style="margin-top:4px">Entrar</button>
@@ -140,7 +140,7 @@
 </div>
 
 <div id="panelView" class="wrap" style="display:none">
-  <h1>Catálogo · Mercadeo Cali</h1>
+  <h1>Catálogo · Enviamelo Cali</h1>
   <p class="sub">Carga y actualiza tu inventario. Los cambios se reflejan en el sitio al instante.</p>
 
   <div class="grid-2">
@@ -242,6 +242,12 @@
         </div>
       </div>
       <p class="hint">Réplicas de calzado y prendas: déjalo en "No incluir" y escribe el nombre sin marca.</p>
+
+      <label for="fDestacado">Destacar en "Más pedidos"</label>
+      <select id="fDestacado">
+        <option value="">No</option>
+        <option value="SI">Sí, mostrar arriba</option>
+      </select>
 
       <label>Ícono (se usa si no hay foto)</label>
       <div class="icon-select-row" id="iconRow"></div>
@@ -479,6 +485,7 @@
     document.getElementById("fPeso").value = p.peso_gr || "";
     document.getElementById("fActivo").value = /^(no|false|0)$/i.test(String(p.activo).trim()) ? "NO" : "SI";
     document.getElementById("fEnMeta").value = String(p.en_meta).toUpperCase() === "SI" ? "SI" : "";
+    document.getElementById("fDestacado").value = String(p.destacado).toUpperCase() === "SI" ? "SI" : "";
     seleccionarIcono(p.icon || "shirt");
     // p.fotosData viene del backend como [{url,fileId}, ...] (ver cargarProductos)
     state.fotos = (p.fotosData || []).map(function(f){ return { url: f.url, fileId: f.fileId || "" }; });
@@ -495,7 +502,7 @@
     document.getElementById("fTalla").value = "";
     document.getElementById("fPrecio").value = "";
     document.getElementById("fDisponibilidad").value = "Disponible";
-    ["fTipoTalla","fTallas","fColores","fDescripcion","fTiempo","fMaterial","fPeso","fEnMeta"].forEach(function(id){
+    ["fTipoTalla","fTallas","fColores","fDescripcion","fTiempo","fMaterial","fPeso","fEnMeta","fDestacado"].forEach(function(id){
       document.getElementById(id).value = "";
     });
     document.getElementById("fActivo").value = "SI";
@@ -621,7 +628,8 @@
       material: document.getElementById("fMaterial").value.trim(),
       peso_gr: document.getElementById("fPeso").value.trim(),
       activo: document.getElementById("fActivo").value,
-      en_meta: document.getElementById("fEnMeta").value
+      en_meta: document.getElementById("fEnMeta").value,
+      destacado: document.getElementById("fDestacado").value
     };
 
     var btn = document.getElementById("saveBtn");
