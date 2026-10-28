@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel · Mercadeo Cali</title>
+  <style>
+    :root{
+      --bg:#F3F3F1; --surface:#FFFFFF; --surface-2:#ECECE9;
+      --ink:#17181B; --ink-soft:#52565C; --ink-faint:#86898F; --line:#DEDFDB;
+      --accent:#FFC107; --accent-ink:#17181B;
+      --ok:#1E8E4F; --ok-bg:#E4F5EA;
+      --low:#B8860B; --low-bg:#FFF2D6;
+      --order:#50545B; --order-bg:#E7E7E4;
+      --danger:#C0392B; --danger-bg:#FBEAE8;
+      --radius:10px;
+      --shadow:0 1px 2px rgba(23,24,27,.06), 0 8px 20px -10px rgba(23,24,27,.18);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      padding:16px; padding-bottom:60px;
+    }
+    h1{font-size:19px; margin:0 0 2px; font-weight:700}
+    .sub{font-size:12.5px; color:var(--ink-faint); margin:0 0 18px}
+    .wrap{max-width:900px; margin:0 auto}
+
+    /* ---- Login ---- */
+    .login-box{
+      max-width:320px; margin:60px auto; background:var(--surface); border:1px solid var(--line);
+      border-radius:var(--radius); padding:26px 22px; box-shadow:var(--shadow); text-align:center;
+    }
+    .login-box h2{font-size:17px; margin:0 0 6px}
+    .login-box p{font-size:12.5px; color:var(--ink-faint); margin:0 0 16px}
+
+    /* ---- Layout ---- */
+    .grid-2{display:grid; grid-template-columns:1fr; gap:18px}
+    @media(min-width:760px){ .grid-2{grid-template-columns:380px 1fr} }
+
+    .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+    .card h2{font-size:14px; margin:0 0 14px; display:flex; align-items:center; gap:8px}
+    .count-pill{background:var(--surface-2); color:var(--ink-soft); font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px}
+
+    label{display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px}
+    input[type=text], input[type=number], select{
+      width:100%; padding:9px 10px; border-radius:8px; border:1.5px solid var(--line);
+      background:var(--bg); color:var(--ink); font-size:14px; font-family:inherit; margin-bottom:12px;
+    }
+    input:focus, select:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+    .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .row2 > div{min-width:0}
+
+    /* ---- Dropzone de foto ---- */
+    .dropzone{
+      border:2px dashed var(--line); border-radius:10px; background:var(--surface-2);
+      text-align:center; padding:16px; cursor:pointer; margin-bottom:12px; position:relative;
+      min-height:120px; display:flex; align-items:center; justify-content:center;
+    }
+    .dropzone.drag{border-color:var(--accent); background:#FFF8E1}
+    .dropzone-empty{color:var(--ink-faint); font-size:12.5px; line-height:1.5}
+    .dropzone-empty b{color:var(--ink-soft); display:block; font-size:13px; margin-bottom:2px}
+    .dropzone input[type=file]{display:none}
+    .foto-grid{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px}
+    .foto-thumb{
+      position:relative; width:64px; height:64px; border-radius:8px; overflow:hidden;
+      background:var(--surface-2); border:1px solid var(--line); flex:none;
+    }
+    .foto-thumb img{width:100%; height:100%; object-fit:cover; display:block}
+    .foto-thumb .foto-remove{
+      position:absolute; top:2px; right:2px; width:20px; height:20px; border-radius:50%;
+      background:rgba(23,24,27,.75); color:#fff; font-size:12px; line-height:1; padding:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .foto-thumb .foto-badge{
+      position:absolute; bottom:0; left:0; right:0; background:rgba(23,24,27,.75); color:#fff;
+      font-size:8.5px; text-align:center; padding:1px 0; font-weight:700;
+    }
+
+    button{font-family:inherit; cursor:pointer; border:none; border-radius:8px; font-weight:700; font-size:13.5px; padding:10px}
+    .btn-primary{background:var(--ink); color:#fff; width:100%}
+    .btn-primary:disabled{opacity:.5; cursor:default}
+    .btn-secondary{background:var(--surface-2); color:var(--ink-soft)}
+    .btn-danger{background:var(--danger-bg); color:var(--danger)}
+    .btn-accent{background:var(--accent); color:var(--accent-ink)}
+    .btn-small{padding:6px 10px; font-size:12px; border-radius:6px}
+
+    .toast{
+      position:fixed; bottom:18px; left:50%; transform:translateX(-50%) translateY(100px);
+      background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px;
+      font-weight:600; box-shadow:0 8px 20px -6px rgba(0,0,0,.4); transition:transform .2s ease; z-index:50;
+    }
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.err{background:var(--danger)}
+
+    /* ---- Lista de productos ---- */
+    .search{margin-bottom:12px}
+    .prod-list{display:flex; flex-direction:column; gap:8px; max-height:70vh; overflow-y:auto}
+    .prod-item{
+      display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line);
+      border-radius:8px; padding:8px; cursor:pointer;
+    }
+    .prod-item:hover{border-color:var(--ink-faint)}
+    .prod-thumb{
+      width:46px; height:46px; border-radius:6px; background:var(--surface-2); flex:none;
+      display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:10px; color:var(--ink-faint);
+    }
+    .prod-thumb img{width:100%; height:100%; object-fit:cover}
+    .prod-info{flex:1; min-width:0}
+    .prod-name{font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .prod-meta{font-size:11.5px; color:var(--ink-faint)}
+    .prod-price{font-size:13px; font-weight:700; white-space:nowrap}
+    .badge-sm{font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:999px; white-space:nowrap}
+    .badge-sm.ok{background:var(--ok-bg); color:var(--ok)}
+    .badge-sm.low{background:var(--low-bg); color:var(--low)}
+    .badge-sm.order{background:var(--order-bg); color:var(--order)}
+    .prod-del{background:none; color:var(--ink-faint); padding:6px; font-size:16px; line-height:1}
+    .empty-list{text-align:center; color:var(--ink-faint); font-size:13px; padding:30px 0}
+
+    .icon-select-row{display:flex; gap:6px; flex-wrap:wrap; margin:-4px 0 12px}
+    .icon-opt{
+      width:38px; height:38px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface);
+      display:flex; align-items:center; justify-content:center; cursor:pointer;
+    }
+    .icon-opt.sel{border-color:var(--accent); background:#FFF8E1}
+    .icon-opt svg{width:20px; height:20px}
+
+    .hint{font-size:11px; color:var(--ink-faint); margin:-6px 0 12px}
+  </style>
+</head>
+<body>
+
+<div id="loginView" class="login-box">
+  <h2>🔒 Panel Mercadeo Cali</h2>
+  <p>Escribe tu código de acceso para administrar el catálogo.</p>
+  <input type="text" id="codeInput" placeholder="Código de acceso" style="text-align:center; letter-spacing:2px">
+  <button class="btn-primary" id="loginBtn" style="margin-top:4px">Entrar</button>
+  <p id="loginError" style="display:none; color:#C0392B; font-size:12px; margin-top:10px">Código incorrecto.</p>
+</div>
+
+<div id="panelView" class="wrap" style="display:none">
+  <h1>Catálogo · Mercadeo Cali</h1>
+  <p class="sub">Carga y actualiza tu inventario. Los cambios se reflejan en el sitio al instante.</p>
+
+  <div class="grid-2">
+    <!-- ======== FORMULARIO ======== -->
+    <div class="card">
+      <h2 id="formTitle">➕ Nuevo producto</h2>
+
+      <label for="fId">ID (único)</label>
+      <input type="text" id="fId" placeholder="p13">
+
+      <label for="fCategoria">Categoría</label>
+      <input type="text" id="fCategoria" list="catList" placeholder="Ej. Moteros, Calzado, Ropa, Joyas" autocomplete="off">
+      <datalist id="catList">
+        <option value="Moteros"></option>
+        <option value="Calzado"></option>
+        <option value="Ropa"></option>
+        <option value="Joyas"></option>
+      </datalist>
+
+      <label for="fSubcategoria">Subcategoría</label>
+      <input type="text" id="fSubcategoria" list="subcatList" placeholder="Ej. Trajes impermeables">
+      <datalist id="subcatList"></datalist>
+
+      <label for="fNombre">Nombre del producto</label>
+      <input type="text" id="fNombre" placeholder="Ej. Traje impermeable siliconado">
+
+      <div class="row2">
+        <div>
+          <label for="fTalla">Talla</label>
+          <input type="text" id="fTalla" placeholder="Ej. M, 38, Única">
+        </div>
+        <div>
+          <label for="fPrecio">Precio (COP)</label>
+          <input type="number" id="fPrecio" placeholder="85000">
+        </div>
+      </div>
+
+      <label for="fDisponibilidad">Disponibilidad</label>
+      <select id="fDisponibilidad">
+        <option>Disponible</option>
+        <option>Agotándose</option>
+        <option>Bajo pedido</option>
+      </select>
+
+      <div class="row2">
+        <div>
+          <label for="fTipoTalla">Tipo de talla</label>
+          <select id="fTipoTalla">
+            <option value="">(automático)</option>
+            <option value="calzado">Calzado (35–44)</option>
+            <option value="ropa">Ropa (XS–XXL)</option>
+            <option value="guantes">Guantes (S–XL)</option>
+            <option value="anillo">Anillo (6–12)</option>
+            <option value="cadena">Cadena (largo en cm)</option>
+            <option value="unica">Talla única</option>
+          </select>
+        </div>
+        <div>
+          <label for="fTiempo">Tiempo de entrega</label>
+          <input type="text" id="fTiempo" placeholder="Ej. 3 a 5 días">
+        </div>
+      </div>
+
+      <label for="fTallas">Tallas disponibles</label>
+      <input type="text" id="fTallas" placeholder="Ej. 36, 37, 38   (con stock: 36:2, 37:0)">
+      <p class="hint">Sepáralas con coma. Vacío = se usa la escala estándar del tipo de talla. "37:0" = esa talla agotada.</p>
+
+      <label for="fColores">Colores</label>
+      <input type="text" id="fColores" placeholder="Ej. Negro, Blanco">
+
+      <label for="fDescripcion">Descripción corta</label>
+      <input type="text" id="fDescripcion" placeholder="Ej. Impermeable, con costuras selladas">
+
+      <div class="row2">
+        <div>
+          <label for="fMaterial">Material (joyas)</label>
+          <input type="text" id="fMaterial" placeholder="Ej. Plata 925">
+        </div>
+        <div>
+          <label for="fPeso">Peso en gramos</label>
+          <input type="text" id="fPeso" placeholder="Ej. 4.5">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label for="fActivo">Mostrar en el sitio</label>
+          <select id="fActivo">
+            <option value="SI">Sí</option>
+            <option value="NO">No (ocultar)</option>
+          </select>
+        </div>
+        <div>
+          <label for="fEnMeta">Catálogo de Meta</label>
+          <select id="fEnMeta">
+            <option value="">No incluir</option>
+            <option value="SI">Sí, incluir</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint">Réplicas de calzado y prendas: déjalo en "No incluir" y escribe el nombre sin marca.</p>
+
+      <label>Ícono (se usa si no hay foto)</label>
+      <div class="icon-select-row" id="iconRow"></div>
+
+      <label>Fotos del producto (puedes agregar varias)</label>
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-empty" id="dropzoneEmpty">
+          <b>Toca para elegir fotos</b>
+          o arrástralas aquí, o pégalas con Ctrl+V
+        </div>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+      </div>
+      <div class="foto-grid" id="fotoGrid"></div>
+      <p class="hint">Cada foto queda guardada en la carpeta de Drive de este ID. Toca la ✕ de una miniatura para quitarla.</p>
+
+      <button class="btn-primary" id="saveBtn">Guardar producto</button>
+      <div style="display:flex; gap:8px; margin-top:8px">
+        <button type="button" class="btn-secondary" id="cancelEditBtn" style="display:none; flex:1">Cancelar edición</button>
+      </div>
+    </div>
+
+    <!-- ======== LISTA ======== -->
+    <div class="card">
+      <h2>📦 Inventario actual <span class="count-pill" id="countPill">0</span></h2>
+      <input type="text" class="search" id="searchInput" placeholder="Buscar por nombre o ID…">
+      <div class="prod-list" id="prodList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ================= ICONOS (mismo set que el catálogo público) ================= */
+  var ICONS = {
+    rain:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 26c0-9 7-16 12-16s12 7 12 16"/><path d="M14 26h36l-4 20H18z"/><path d="M26 50l-3 8M38 50l-3 8M32 50l0 8" stroke="#FFC107"/></g></svg>',
+    vest:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linejoin="round"><path d="M20 14l10 6 10-6 8 8-6 6v24H18V28l-6-6z"/><path d="M26 18v30M38 18v30" stroke="#FFC107"/></g></svg>',
+    light:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linecap="round"><circle cx="30" cy="32" r="14"/><path d="M44 32h10M46 24l7-5M46 40l7 5" stroke="#FFC107"/></g></svg>',
+    mirror:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linecap="round"><path d="M32 10v8M20 44c0 8 6 12 12 12s12-4 12-12-6-14-12-14-12 6-12 14z"/><ellipse cx="32" cy="42" rx="10" ry="12" stroke="#FFC107"/></g></svg>',
+    glove:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M22 30V16a4 4 0 018 0v10M30 28V14a4 4 0 018 0v14M38 28V18a4 4 0 018 0v16c0 10-6 18-16 18s-16-6-16-16v-8a4 4 0 018 0" stroke="#FFC107"/></g></svg>',
+    shoe:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 44c0-6 4-9 10-11l8-10c3-3 6-3 9-1l9 7c4 3 8 4 14 4v10a3 3 0 01-3 3H13a3 3 0 01-3-3z"/><path d="M20 33l6 6M30 25l8 8" stroke="#FFC107"/></g></svg>',
+    shirt:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linejoin="round"><path d="M22 12l10 6 10-6 10 10-8 6v24H20V28l-8-6z"/><path d="M26 16a6 6 0 0012 0" stroke="#FFC107"/></g></svg>',
+    hoodie:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M22 14c3-3 6-4 10-4s7 1 10 4l9 7-6 7-5-3v27H24V25l-5 3-6-7z"/><path d="M26 16c2 3 4 5 6 5s4-2 6-5" stroke="#FFC107"/></g></svg>',
+    pants:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M18 10h28l2 16-4 26h-9l-3-24-3 24h-9l-4-26z"/><path d="M18 10h28" stroke="#FFC107"/></g></svg>',
+    helmet:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linecap="round"><path d="M12 38a20 18 0 0140 0z"/><path d="M12 38h40v4a4 4 0 01-4 4H16a4 4 0 01-4-4z"/><path d="M26 38v-8a6 6 0 0112 0v8" stroke="#FFC107"/></g></svg>',
+    bag:'<svg viewBox="0 0 64 64"><g fill="none" stroke="#52565C" stroke-width="2.2" stroke-linejoin="round"><rect x="12" y="22" width="40" height="30" rx="4"/><path d="M22 22v-4a10 10 0 0120 0v4" stroke="#FFC107"/></g></svg>'
+  };
+  var SUBCATS = {
+    "Moteros": ["Trajes impermeables","Chalecos reflectivos","Luces","Espejos","Guantes","Maletas","Cascos","Botas","Chaquetas"],
+    "Calzado": ["Dama","Caballero"],
+    "Ropa": ["Dama","Caballero","Personalizada"],
+    "Joyas": ["Anillos","Cadenas","Aretes","Pulseras","Dijes"]
+  };
+
+  // state.fotos: array de { url, fileId, pendiente, base64, mime }
+  //   - foto ya guardada en Drive: { url, fileId }
+  //   - foto nueva (todavía no subida): { pendiente:true, base64, mime, url(preview local) }
+  var state = { code: "", productos: [], editandoId: null, fotos: [] };
+
+  /* ================= LOGIN ================= */
+  document.getElementById("loginBtn").addEventListener("click", intentarLogin);
+  document.getElementById("codeInput").addEventListener("keydown", function(e){ if(e.key === "Enter") intentarLogin(); });
+
+  function intentarLogin(){
+    var code = document.getElementById("codeInput").value.trim();
+    if(!code) return;
+    document.getElementById("loginBtn").disabled = true;
+    google.script.run
+      .withSuccessHandler(function(){
+        state.code = code;
+        try{ sessionStorage.setItem("mc_admin_code", code); }catch(e){}
+        document.getElementById("loginView").style.display = "none";
+        document.getElementById("panelView").style.display = "block";
+        iniciarPanel();
+      })
+      .withFailureHandler(function(err){
+        document.getElementById("loginBtn").disabled = false;
+        document.getElementById("loginError").style.display = "block";
+        document.getElementById("loginError").textContent = err.message || "Código incorrecto.";
+      })
+      .verificarAcceso(code);
+  }
+
+  // Recordar el código en esta sesión del navegador
+  (function(){
+    try{
+      var saved = sessionStorage.getItem("mc_admin_code");
+      if(saved){ document.getElementById("codeInput").value = saved; intentarLogin(); }
+    }catch(e){}
+  })();
+
+  /* ================= INIT DEL PANEL ================= */
+  function iniciarPanel(){
+    renderIconRow();
+    actualizarSubcats();
+    document.getElementById("fCategoria").addEventListener("change", actualizarSubcats);
+    document.getElementById("fCategoria").addEventListener("input", actualizarSubcats);
+    cargarProductos();
+  }
+
+  function renderIconRow(){
+    var row = document.getElementById("iconRow");
+    row.innerHTML = "";
+    Object.keys(ICONS).forEach(function(key){
+      var btn = document.createElement("div");
+      btn.className = "icon-opt" + (key === "shirt" ? " sel" : "");
+      btn.dataset.icon = key;
+      btn.innerHTML = ICONS[key];
+      btn.addEventListener("click", function(){
+        document.querySelectorAll(".icon-opt").forEach(function(el){ el.classList.remove("sel"); });
+        btn.classList.add("sel");
+      });
+      row.appendChild(btn);
+    });
+  }
+
+  function iconoSeleccionado(){
+    var sel = document.querySelector(".icon-opt.sel");
+    return sel ? sel.dataset.icon : "shirt";
+  }
+  function seleccionarIcono(key){
+    document.querySelectorAll(".icon-opt").forEach(function(el){
+      el.classList.toggle("sel", el.dataset.icon === key);
+    });
+  }
+
+  function actualizarSubcats(){
+    var cat = document.getElementById("fCategoria").value;
+    var list = document.getElementById("subcatList");
+    list.innerHTML = "";
+    (SUBCATS[cat] || []).forEach(function(s){
+      var opt = document.createElement("option");
+      opt.value = s; list.appendChild(opt);
+    });
+  }
+
+  /* ================= CARGA Y LISTA DE PRODUCTOS ================= */
+  function cargarProductos(){
+    google.script.run
+      .withSuccessHandler(function(lista){
+        state.productos = lista || [];
+        renderLista();
+        if(!state.editandoId) sugerirSiguienteId();
+      })
+      .withFailureHandler(function(err){ mostrarToast(err.message || "Error cargando productos", true); })
+      .listarProductosAdmin(state.code);
+  }
+
+  function sugerirSiguienteId(){
+    var max = 0;
+    state.productos.forEach(function(p){
+      var m = String(p.id).match(/^p(\d+)$/i);
+      if(m) max = Math.max(max, parseInt(m[1], 10));
+    });
+    document.getElementById("fId").value = "p" + (max + 1);
+  }
+
+  var BADGE_MAP = { "Disponible":"ok", "Agotándose":"low", "Bajo pedido":"order" };
+
+  function renderLista(){
+    var cont = document.getElementById("prodList");
+    var q = document.getElementById("searchInput").value.trim().toLowerCase();
+    var lista = state.productos.filter(function(p){
+      if(!q) return true;
+      return (p.nombre + " " + p.id).toLowerCase().indexOf(q) > -1;
+    });
+    document.getElementById("countPill").textContent = state.productos.length;
+    cont.innerHTML = "";
+    if(!lista.length){
+      cont.innerHTML = '<p class="empty-list">Sin productos todavía. Usa el formulario para agregar el primero.</p>';
+      return;
+    }
+    lista.forEach(function(p){
+      var item = document.createElement("div");
+      item.className = "prod-item";
+      var primeraFoto = (p.fotosData && p.fotosData[0]) ? p.fotosData[0].url : "";
+      var thumbContent = primeraFoto
+        ? '<img src="' + primeraFoto + '" alt="">'
+        : ICONS[p.icon] || ICONS.shirt;
+      item.innerHTML =
+        '<div class="prod-thumb">' + thumbContent + '</div>' +
+        '<div class="prod-info">' +
+          '<div class="prod-name">' + escapeHtml(p.nombre || "(sin nombre)") + '</div>' +
+          '<div class="prod-meta">' + escapeHtml(p.id) + ' · ' + escapeHtml(p.subcategoria || "") + ' · Talla ' + escapeHtml(p.tallas || p.talla || "-") +
+            (String(p.en_meta).toUpperCase() === "SI" ? ' · Meta ✓' : '') +
+            (/^(no|false|0)$/i.test(String(p.activo).trim()) ? ' · OCULTO' : '') + '</div>' +
+        '</div>' +
+        '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px">' +
+          '<span class="prod-price">$' + Number(p.precio || 0).toLocaleString("es-CO") + '</span>' +
+          '<span class="badge-sm ' + (BADGE_MAP[p.disponibilidad] || "ok") + '">' + escapeHtml(p.disponibilidad || "Disponible") + '</span>' +
+        '</div>' +
+        '<button type="button" class="prod-del" title="Eliminar" data-id="' + escapeHtml(p.id) + '">✕</button>';
+
+      item.addEventListener("click", function(e){
+        if(e.target.classList.contains("prod-del")) return;
+        cargarEnFormulario(p);
+      });
+      item.querySelector(".prod-del").addEventListener("click", function(e){
+        e.stopPropagation();
+        if(!confirm('¿Eliminar "' + p.nombre + '"? Esta acción no se puede deshacer.')) return;
+        google.script.run
+          .withSuccessHandler(function(){ mostrarToast("Producto eliminado"); cargarProductos(); })
+          .withFailureHandler(function(err){ mostrarToast(err.message || "Error al eliminar", true); })
+          .eliminarProducto(state.code, p.id);
+      });
+      cont.appendChild(item);
+    });
+  }
+  document.getElementById("searchInput").addEventListener("input", renderLista);
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  /* ================= FORMULARIO: editar / limpiar ================= */
+  function cargarEnFormulario(p){
+    state.editandoId = p.id;
+    document.getElementById("formTitle").textContent = "✏️ Editando: " + p.nombre;
+    document.getElementById("fId").value = p.id;
+    document.getElementById("fCategoria").value = p.categoria;
+    actualizarSubcats();
+    document.getElementById("fSubcategoria").value = p.subcategoria;
+    document.getElementById("fNombre").value = p.nombre;
+    document.getElementById("fTalla").value = p.talla;
+    document.getElementById("fPrecio").value = p.precio;
+    document.getElementById("fDisponibilidad").value = p.disponibilidad;
+    document.getElementById("fTipoTalla").value = String(p.tipo_talla || "").toLowerCase();
+    document.getElementById("fTallas").value = p.tallas || "";
+    document.getElementById("fColores").value = p.colores || "";
+    document.getElementById("fDescripcion").value = p.descripcion || "";
+    document.getElementById("fTiempo").value = p.tiempo_entrega || "";
+    document.getElementById("fMaterial").value = p.material || "";
+    document.getElementById("fPeso").value = p.peso_gr || "";
+    document.getElementById("fActivo").value = /^(no|false|0)$/i.test(String(p.activo).trim()) ? "NO" : "SI";
+    document.getElementById("fEnMeta").value = String(p.en_meta).toUpperCase() === "SI" ? "SI" : "";
+    seleccionarIcono(p.icon || "shirt");
+    // p.fotosData viene del backend como [{url,fileId}, ...] (ver cargarProductos)
+    state.fotos = (p.fotosData || []).map(function(f){ return { url: f.url, fileId: f.fileId || "" }; });
+    renderFotoGrid();
+    document.getElementById("cancelEditBtn").style.display = "block";
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function limpiarFormulario(){
+    state.editandoId = null;
+    state.fotos = [];
+    document.getElementById("formTitle").textContent = "➕ Nuevo producto";
+    document.getElementById("fNombre").value = "";
+    document.getElementById("fTalla").value = "";
+    document.getElementById("fPrecio").value = "";
+    document.getElementById("fDisponibilidad").value = "Disponible";
+    ["fTipoTalla","fTallas","fColores","fDescripcion","fTiempo","fMaterial","fPeso","fEnMeta"].forEach(function(id){
+      document.getElementById(id).value = "";
+    });
+    document.getElementById("fActivo").value = "SI";
+    seleccionarIcono("shirt");
+    renderFotoGrid();
+    document.getElementById("cancelEditBtn").style.display = "none";
+    sugerirSiguienteId();
+    document.getElementById("fNombre").focus();
+  }
+  document.getElementById("cancelEditBtn").addEventListener("click", limpiarFormulario);
+
+  /* ================= FOTOS: click, drag&drop, pegar (Ctrl+V) — varias a la vez ================= */
+  var dropzone = document.getElementById("dropzone");
+  var fileInput = document.getElementById("fileInput");
+
+  dropzone.addEventListener("click", function(){ fileInput.click(); });
+  fileInput.addEventListener("change", function(){
+    if(fileInput.files && fileInput.files.length) procesarArchivos(fileInput.files);
+    fileInput.value = "";
+  });
+  dropzone.addEventListener("dragover", function(e){ e.preventDefault(); dropzone.classList.add("drag"); });
+  dropzone.addEventListener("dragleave", function(){ dropzone.classList.remove("drag"); });
+  dropzone.addEventListener("drop", function(e){
+    e.preventDefault(); dropzone.classList.remove("drag");
+    if(e.dataTransfer.files && e.dataTransfer.files.length) procesarArchivos(e.dataTransfer.files);
+  });
+  document.addEventListener("paste", function(e){
+    if(document.getElementById("panelView").style.display === "none") return;
+    var items = (e.clipboardData || window.clipboardData).items;
+    var archivos = [];
+    for(var i = 0; i < items.length; i++){
+      if(items[i].type.indexOf("image") === 0) archivos.push(items[i].getAsFile());
+    }
+    if(archivos.length) procesarArchivos(archivos);
+  });
+
+  function procesarArchivos(fileList){
+    Array.prototype.forEach.call(fileList, function(file){
+      redimensionarImagen(file, 1400, 0.82).then(function(dataUrl){
+        state.fotos.push({ pendiente:true, base64: dataUrl, mime:"image/jpeg", url: dataUrl });
+        renderFotoGrid();
+      }).catch(function(){ mostrarToast("No se pudo procesar una imagen", true); });
+    });
+  }
+
+  function redimensionarImagen(file, maxDim, calidad){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var img = new Image();
+        img.onload = function(){
+          var w = img.width, h = img.height;
+          if(w > maxDim || h > maxDim){
+            if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          var canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", calidad));
+        };
+        img.onerror = reject;
+        img.src = ev.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderFotoGrid(){
+    var grid = document.getElementById("fotoGrid");
+    grid.innerHTML = "";
+    state.fotos.forEach(function(f, idx){
+      var thumb = document.createElement("div");
+      thumb.className = "foto-thumb";
+      thumb.innerHTML =
+        '<img src="' + f.url + '" alt="">' +
+        (idx === 0 ? '<span class="foto-badge">Principal</span>' : '') +
+        '<button type="button" class="foto-remove" data-idx="' + idx + '">✕</button>';
+      thumb.querySelector(".foto-remove").addEventListener("click", function(e){
+        e.stopPropagation();
+        quitarFoto(idx);
+      });
+      grid.appendChild(thumb);
+    });
+  }
+
+  function quitarFoto(idx){
+    var f = state.fotos[idx];
+    if(f && !f.pendiente && f.fileId){
+      // ya estaba subida a Drive: la borra también allá
+      google.script.run.eliminarFotoDrive(state.code, f.fileId);
+    }
+    state.fotos.splice(idx, 1);
+    renderFotoGrid();
+  }
+
+  /* ================= GUARDAR ================= */
+  document.getElementById("saveBtn").addEventListener("click", function(){
+    var id = document.getElementById("fId").value.trim();
+    var nombre = document.getElementById("fNombre").value.trim();
+    var precio = document.getElementById("fPrecio").value;
+
+    if(!id || !nombre || !precio){
+      mostrarToast("Completa al menos ID, nombre y precio", true);
+      return;
+    }
+
+    var producto = {
+      id: id,
+      categoria: document.getElementById("fCategoria").value,
+      subcategoria: document.getElementById("fSubcategoria").value.trim(),
+      nombre: nombre,
+      talla: document.getElementById("fTalla").value.trim(),
+      precio: precio,
+      disponibilidad: document.getElementById("fDisponibilidad").value,
+      icon: iconoSeleccionado(),
+      tipo_talla: document.getElementById("fTipoTalla").value,
+      tallas: document.getElementById("fTallas").value.trim(),
+      colores: document.getElementById("fColores").value.trim(),
+      descripcion: document.getElementById("fDescripcion").value.trim(),
+      tiempo_entrega: document.getElementById("fTiempo").value.trim(),
+      material: document.getElementById("fMaterial").value.trim(),
+      peso_gr: document.getElementById("fPeso").value.trim(),
+      activo: document.getElementById("fActivo").value,
+      en_meta: document.getElementById("fEnMeta").value
+    };
+
+    var btn = document.getElementById("saveBtn");
+    btn.disabled = true; btn.textContent = "Guardando…";
+
+    function subirUnaFoto(f){
+      return new Promise(function(resolve, reject){
+        google.script.run
+          .withSuccessHandler(function(res){ resolve({ url: res.url, fileId: res.fileId }); })
+          .withFailureHandler(reject)
+          .subirFotoProducto(state.code, id, f.base64, f.mime, id);
+      });
+    }
+
+    // Sube las fotos nuevas (pendientes) en orden; conserva las que ya estaban en Drive
+    var promesas = state.fotos.map(function(f){
+      return f.pendiente ? subirUnaFoto(f) : Promise.resolve({ url: f.url, fileId: f.fileId });
+    });
+
+    Promise.all(promesas).then(function(fotosFinales){
+      producto.fotos = fotosFinales; // [] si el usuario quitó todas las fotos
+      google.script.run
+        .withSuccessHandler(function(){
+          mostrarToast(state.editandoId ? "Producto actualizado ✓" : "Producto guardado ✓");
+          var catAnterior = document.getElementById("fCategoria").value;
+          limpiarFormulario();
+          document.getElementById("fCategoria").value = catAnterior; // agiliza carga por lotes de la misma categoría
+          actualizarSubcats();
+          btn.disabled = false; btn.textContent = "Guardar producto";
+          cargarProductos();
+        })
+        .withFailureHandler(function(err){
+          btn.disabled = false; btn.textContent = "Guardar producto";
+          mostrarToast(err.message || "Error al guardar", true);
+        })
+        .guardarProducto(state.code, producto);
+    }).catch(function(err){
+      btn.disabled = false; btn.textContent = "Guardar producto";
+      mostrarToast((err && err.message) || "Error al subir una foto", true);
+    });
+  });
+
+  /* ================= TOAST ================= */
+  var toastTimer = null;
+  function mostrarToast(msg, esError){
+    var toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.className = "toast show" + (esError ? " err" : "");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.className = "toast"; }, 2600);
+  }
+</script>
+</body>
+</html>

@@ -42,9 +42,24 @@ Si `tallas` va vacía, se usa la escala estándar del `tipo_talla` (calzado 35�
 
 ## Publicar o actualizar el Apps Script
 
-1. En la hoja: Extensiones → Apps Script. Reemplaza el contenido de `Code.gs` por el de `apps-script/Code.gs`.
-2. Implementar → Administrar implementaciones → ícono de lápiz en la implementación existente → Versión: **Nueva versión** → Implementar. Así la URL no cambia.
-3. Prueba en el navegador: `URL?action=productos` debe mostrar el JSON.
+El proyecto de Apps Script tiene dos archivos, y ambos están en `apps-script/`: `Code.gs` y `Admin.html` (el panel de carga de productos). Son versiones ampliadas de los que ya estaban en la hoja: conservan el panel, la subida de fotos a Drive, el menú y el envío a Meta.
+
+1. Haz una copia de seguridad: en la hoja, Archivo → Hacer una copia.
+2. En la hoja: Extensiones → Apps Script. Reemplaza el contenido de `Code.gs` y de `Admin.html` por los de `apps-script/`. Las credenciales de Meta, el código del panel y el disparador "al editar" quedan guardados aparte y no se pierden.
+3. Guarda, recarga la hoja y usa el menú Mercadeo Cali → "Crear/ordenar hojas". Agrega las columnas nuevas al final sin borrar datos.
+4. Implementar → Administrar implementaciones → ícono de lápiz → Versión: **Nueva versión** → Implementar. Así la URL no cambia.
+5. Prueba en el navegador: `URL?action=productos` debe mostrar el JSON, y `URL?page=admin` abre el panel.
+
+## Embudo y eventos a Meta
+
+En la hoja Leads, al cambiar la columna `Etapa`:
+
+| Etapa | Evento enviado a Meta |
+|---|---|
+| Interesado/Calificado | `LeadCalificado` (columnas `CAPI_Enviado`, `Fecha_CAPI`) |
+| Cerrado (ganado) | `Purchase` con el valor del pedido (columnas `CAPI_Compra`, `Fecha_CAPI_Compra`) |
+
+El evento `Purchase` es el que permite pedirle a Meta que optimice los anuncios por ventas reales. Cada evento se envía una sola vez por lead. La versión de la API de Meta está en la constante `META_API_VERSION` al inicio de `Code.gs`.
 
 ## Feed de Meta (Fase 2)
 
