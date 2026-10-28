@@ -176,8 +176,8 @@ function inicializarHojas() {
   crearHojas_();
   SpreadsheetApp.getUi().alert(
     "Hojas 'Productos' y 'Leads' listas (se agregaron las columnas que faltaban, sin borrar datos).\n\n" +
-    "Iconos válidos: rain, vest, light, mirror, glove, shoe, shirt, hoodie, pants, helmet, bag, ring, chain.\n" +
-    "tipo_talla válidos: calzado, ropa, guantes, anillo, cadena, unica.\n" +
+    "Iconos válidos: rain, vest, light, mirror, glove, shoe, shirt, hoodie, pants, helmet, bag.\n" +
+    "tipo_talla válidos: calzado, ropa, guantes, unica.\n" +
     "en_meta: escribe SI solo en lo que debe ir al catálogo de Meta (déjalo vacío en réplicas)."
   );
 }

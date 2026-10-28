@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Enviamelo Cali · Catálogo de disponibilidad</title>
-<meta name="description" content="Accesorios para moteros, calzado, ropa y joyas con entrega a domicilio. Separa tu pedido con $20.000 de anticipo y cierra por WhatsApp.">
+<meta name="description" content="Accesorios para moteros, calzado y ropa con entrega a domicilio. Separa tu pedido con $20.000 de anticipo y cierra por WhatsApp.">
 <meta name="theme-color" content="#FFFFFF">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Enviamelo Cali">
 <meta property="og:title" content="Enviamelo Cali · Catálogo de disponibilidad">
-<meta property="og:description" content="Accesorios para moteros, calzado, ropa y joyas con entrega a domicilio. Separa con $20.000 de anticipo.">
+<meta property="og:description" content="Accesorios para moteros, calzado y ropa con entrega a domicilio. Separa con $20.000 de anticipo.">
 <meta property="og:url" content="https://lc-mira.github.io/enviamelocali/">
 <meta property="og:locale" content="es_CO">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23D71920'/%3E%3Cg fill='white'%3E%3Crect x='12' y='10' width='16' height='4' rx='1'/%3E%3Crect x='12' y='10' width='4' height='20' rx='1'/%3E%3Crect x='12' y='18' width='12' height='4' rx='1'/%3E%3Cpolygon points='23,15 31,20 23,25'/%3E%3Crect x='12' y='26' width='16' height='4' rx='1'/%3E%3C/g%3E%3C/svg%3E">
@@ -394,7 +394,7 @@
       <div class="hero-copy">
         <p class="eyebrow">Disponibilidad de hoy</p>
         <h1>Tu pedido, directo<br>a tu puerta. <span class="red">Sepáralo hoy.</span></h1>
-        <p class="hero-sub">Accesorios para moteros, calzado, ropa y joyas. Separa con <strong id="heroAnticipo">$20.000</strong> de anticipo, que se descuenta del total, y cerramos el pedido por WhatsApp.</p>
+        <p class="hero-sub">Accesorios para moteros, calzado y ropa. Separa con <strong id="heroAnticipo">$20.000</strong> de anticipo, que se descuenta del total, y cerramos el pedido por WhatsApp.</p>
         <div class="hero-cta">
           <button class="btn-red" id="heroCatalog" type="button">Ver catálogo <span aria-hidden="true">→</span></button>
           <button class="btn-line" id="heroWa" type="button">Escríbenos</button>
@@ -425,7 +425,7 @@
     <div class="section-head" style="margin-bottom:6px"><h2 class="section-title">Todo el catálogo</h2></div>
     <div class="filters">
       <label class="sr-only" for="searchInput">Buscar productos</label>
-      <input class="search" id="searchInput" type="search" placeholder="Buscar: guantes, tenis, cadena…" autocomplete="off">
+      <input class="search" id="searchInput" type="search" placeholder="Buscar: guantes, tenis, chaqueta…" autocomplete="off">
       <div class="cat-row" id="catRow" aria-label="Categorías"></div>
       <div class="subcat-row" id="subcatRow" aria-label="Subcategorías"></div>
       <p class="result-count" id="resultCount" aria-live="polite"></p>
@@ -553,8 +553,6 @@
     calzado: {label:"Talla", options:["35","36","37","38","39","40","41","42","43","44"]},
     ropa:    {label:"Talla", options:["XS","S","M","L","XL","XXL"]},
     guantes: {label:"Talla de guante", options:["S","M","L","XL"]},
-    anillo:  {label:"Talla de anillo", options:["6","7","8","9","10","11","12"]},
-    cadena:  {label:"Largo de cadena", options:["40 cm","45 cm","50 cm","55 cm","60 cm"]},
     unica:   {label:"Talla", options:[]}
   };
   var GENERIC_SIZES = ["", "revisar", "todas", "todos", "-", "n/a", "na"];
@@ -571,9 +569,7 @@
     hoodie:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M22 14c3-3 6-4 10-4s7 1 10 4l9 7-6 7-5-3v27H24V25l-5 3-6-7z"/><path d="M26 16c2 3 4 5 6 5s4-2 6-5" stroke="var(--red)"/></g></svg>',
     pants:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M18 10h28l2 16-4 26h-9l-3-24-3 24h-9l-4-26z"/><path d="M18 10h28" stroke="var(--red)"/></g></svg>',
     helmet:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linecap="round"><path d="M12 38a20 18 0 0140 0z"/><path d="M12 38h40v4a4 4 0 01-4 4H16a4 4 0 01-4-4z"/><path d="M26 38v-8a6 6 0 0112 0v8" stroke="var(--red)"/></g></svg>',
-    bag:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round"><rect x="12" y="22" width="40" height="30" rx="4"/><path d="M22 22v-4a10 10 0 0120 0v4" stroke="var(--red)"/></g></svg>',
-    ring:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><circle cx="32" cy="38" r="14"/><path d="M26 18l6-8 6 8-6 6z" stroke="var(--red)"/></g></svg>',
-    chain:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linecap="round"><path d="M14 14c0 22 8 36 18 36s18-14 18-36"/><circle cx="32" cy="50" r="4" stroke="var(--red)"/></g></svg>'
+    bag:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round"><rect x="12" y="22" width="40" height="30" rx="4"/><path d="M22 22v-4a10 10 0 0120 0v4" stroke="var(--red)"/></g></svg>'
   };
   var LOGO_WHITE = '<svg class="hv-logo" viewBox="0 0 40 40" aria-hidden="true"><g fill="#fff"><rect x="12" y="10" width="16" height="4" rx="1"/><rect x="12" y="10" width="4" height="20" rx="1"/><rect x="12" y="18" width="12" height="4" rx="1"/><polygon points="23,15 31,20 23,25"/><rect x="12" y="26" width="16" height="4" rx="1"/></g></svg>';
   var BADGE_MAP = {
@@ -630,8 +626,6 @@
     if(cat.indexOf("calzado") > -1) return "calzado";
     if(cat.indexOf("ropa") > -1) return "ropa";
     if(sub.indexOf("guante") > -1) return "guantes";
-    if(sub.indexOf("anillo") > -1) return "anillo";
-    if(sub.indexOf("cadena") > -1 || sub.indexOf("collar") > -1) return "cadena";
     return "";
   }
 
@@ -708,7 +702,6 @@
     if(n.indexOf("moter") > -1) return ICONS.helmet;
     if(n.indexOf("calz") > -1) return ICONS.shoe;
     if(n.indexOf("ropa") > -1) return ICONS.shirt;
-    if(n.indexOf("joya") > -1) return ICONS.ring;
     return ICONS.bag;
   }
 

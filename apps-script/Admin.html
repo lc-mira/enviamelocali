@@ -152,12 +152,11 @@
       <input type="text" id="fId" placeholder="p13">
 
       <label for="fCategoria">Categoría</label>
-      <input type="text" id="fCategoria" list="catList" placeholder="Ej. Moteros, Calzado, Ropa, Joyas" autocomplete="off">
+      <input type="text" id="fCategoria" list="catList" placeholder="Ej. Moteros, Calzado, Ropa" autocomplete="off">
       <datalist id="catList">
         <option value="Moteros"></option>
         <option value="Calzado"></option>
         <option value="Ropa"></option>
-        <option value="Joyas"></option>
       </datalist>
 
       <label for="fSubcategoria">Subcategoría</label>
@@ -198,8 +197,6 @@
             <option value="calzado">Calzado (35–44)</option>
             <option value="ropa">Ropa (XS–XXL)</option>
             <option value="guantes">Guantes (S–XL)</option>
-            <option value="anillo">Anillo (6–12)</option>
-            <option value="cadena">Cadena (largo en cm)</option>
             <option value="unica">Talla única</option>
           </select>
         </div>
@@ -221,8 +218,8 @@
 
       <div class="row2">
         <div>
-          <label for="fMaterial">Material (joyas)</label>
-          <input type="text" id="fMaterial" placeholder="Ej. Plata 925">
+          <label for="fMaterial">Material (opcional)</label>
+          <input type="text" id="fMaterial" placeholder="Ej. Cuero, Poliéster">
         </div>
         <div>
           <label for="fPeso">Peso en gramos</label>
@@ -303,8 +300,7 @@
   var SUBCATS = {
     "Moteros": ["Trajes impermeables","Chalecos reflectivos","Luces","Espejos","Guantes","Maletas","Cascos","Botas","Chaquetas"],
     "Calzado": ["Dama","Caballero"],
-    "Ropa": ["Dama","Caballero","Personalizada"],
-    "Joyas": ["Anillos","Cadenas","Aretes","Pulseras","Dijes"]
+    "Ropa": ["Dama","Caballero","Personalizada"]
   };
 
   // state.fotos: array de { url, fileId, pendiente, base64, mime }

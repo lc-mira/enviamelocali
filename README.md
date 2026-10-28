@@ -23,11 +23,11 @@ Las columnas actuales (`id`, `categoria`, `subcategoria`, `nombre`, `talla`, `pr
 |---|---|
 | `activo` | `SI` / `NO`. `NO` oculta el producto sin borrarlo |
 | `descripcion` | Texto corto |
-| `tipo_talla` | `calzado`, `ropa`, `guantes`, `anillo`, `cadena` o `unica` |
+| `tipo_talla` | `calzado`, `ropa`, `guantes` o `unica` |
 | `tallas` | Lista separada por coma: `36, 37, 38`. Con stock: `36:2, 37:0` (`:0` = agotada) |
 | `colores` | `Negro, Blanco` |
 | `tiempo_entrega` | `3 a 5 días` (se muestra en los "bajo pedido") |
-| `material`, `peso_gr` | Para joyas: `Plata 925`, `4.5` |
+| `material`, `peso_gr` | Opcionales: `Cuero`, `450` (se muestran en la ficha) |
 | `en_meta` | `SI` solo para lo que debe ir al catálogo de Meta. Vacío = excluido |
 | `marca` | Opcional, solo para el feed de Meta |
 | `precio_normal` | Precio normal (el de la calle). Si es mayor que `precio`, la página lo muestra tachado como "Precio normal", con el precio de hoy en rojo y "Ahorras $X". Vacío = sin descuento. El pedido, el anticipo, el mensaje de WhatsApp y los eventos de Meta siempre usan `precio` |
@@ -36,7 +36,7 @@ Las columnas actuales (`id`, `categoria`, `subcategoria`, `nombre`, `talla`, `pr
 
 `disponibilidad`: `Disponible`, `Agotándose` o `Bajo pedido`.
 
-Si `tallas` va vacía, se usa la escala estándar del `tipo_talla` (calzado 35–44, ropa XS–XXL, guantes S–XL, anillo 6–12, cadena 40–60 cm).
+Si `tallas` va vacía, se usa la escala estándar del `tipo_talla` (calzado 35–44, ropa XS–XXL, guantes S–XL).
 
 **Réplicas:** dejar `en_meta` vacío y nombres sin marca.
 
