@@ -946,9 +946,18 @@
     });
   }
 
+  /* Orden aleatorio que cambia en cada carga de la página (rotación del marketplace).
+     Es fijo mientras la página está abierta, así no se reordena al actualizar los datos. */
+  var ORDER_SEED = Math.floor(Math.random() * 4294967296);
+  function orderKey(id){
+    var h = (2166136261 ^ ORDER_SEED) >>> 0, s = String(id);
+    for(var i = 0; i < s.length; i++){ h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; }
+    h ^= h >>> 15; h = Math.imul(h, 2246822519) >>> 0; h ^= h >>> 13;
+    return h >>> 0;
+  }
   function filteredProducts(){
     var q = norm(state.query);
-    return state.products.filter(function(p){
+    return state.products.slice().sort(function(a, b){ return orderKey(a.id) - orderKey(b.id); }).filter(function(p){
       if(state.category !== "Todos" && p.categoria !== state.category) return false;
       if(state.subcategory !== "Todos" && p.subcategoria !== state.subcategory) return false;
       if(q){
@@ -1006,13 +1015,21 @@
   /* ================= FICHA DE PRODUCTO ================= */
   var overlay = $("overlay");
 
-  function setUrlProduct(id){
+  /* Historial: ficha y lista son "pantallas" del historial, así el botón Atrás del celular
+     las cierra y deja al cliente donde estaba en el catálogo (sin sacarlo de la página). */
+  var savedScrollY = 0;
+  function urlFor(id){
     try{
       var u = new URL(location.href);
       if(id) u.searchParams.set("p", id); else u.searchParams.delete("p");
-      history.replaceState(null, "", u.pathname + u.search + u.hash);
-    }catch(e){}
+      return u.pathname + u.search + u.hash;
+    }catch(e){ return location.href; }
   }
+  function histPush(st, url){ try{ history.pushState(st, "", url); }catch(e){} }
+  function histReplace(st, url){ try{ history.replaceState(st, "", url); }catch(e){} }
+  function histOv(){ try{ return history.state && history.state.ov; }catch(e){ return null; } }
+  function rememberScroll(){ if(overlay.hidden && listOverlay.hidden) savedScrollY = window.pageYOffset || 0; }
+  function restoreScroll(){ if(overlay.hidden && listOverlay.hidden){ try{ window.scrollTo(0, savedScrollY); }catch(e){} } }
 
   function anticipoText(price){
     var rest = Math.max(price - CONFIG.ANTICIPO, 0);
@@ -1053,7 +1070,9 @@
     });
   }
 
-  function openProduct(p){
+  function openProduct(p, opts){
+    opts = opts || {};
+    rememberScroll();
     state.active = p; state.selSize = ""; state.selColor = ""; state.activePhoto = 0;
     var badge = badgeFor(p), si = sizeInfo(p);
     renderGallery(p);
@@ -1107,15 +1126,22 @@
     $("leadForm").reset();
     overlay.hidden = false;
     document.body.style.overflow = "hidden";
-    setUrlProduct(p.id);
+    if(!opts.noPush){
+      // Si se entró con ?p=ID, esa entrada pasa a ser el catálogo y la ficha es una pantalla encima
+      if(histOv() !== "product" && new URLSearchParams(location.search).get("p")) histReplace(null, urlFor(null));
+      histPush({ov:"product", id:p.id}, urlFor(p.id));
+    }
     track("ViewContent", {
       content_name: p.nombre, content_category: p.categoria + (p.subcategoria ? " / " + p.subcategoria : ""),
       content_ids:[p.id], content_type:"product", value:p.precio, currency:"COP"
     });
   }
 
-  function closeProduct(){
-    overlay.hidden = true; document.body.style.overflow = ""; setUrlProduct(null);
+  function closeProduct(opts){
+    opts = opts || {};
+    overlay.hidden = true;
+    if(listOverlay.hidden){ document.body.style.overflow = ""; restoreScroll(); }
+    if(!opts.fromPop && !opts.keepEntry && histOv() === "product"){ try{ history.back(); }catch(e){} }
   }
   $("sheetClose").addEventListener("click", closeProduct);
   overlay.addEventListener("click", function(e){ if(e.target === overlay) closeProduct(); });
@@ -1161,8 +1187,8 @@
     var dup = state.list.some(function(i){ return i.id === item.id && i.talla === item.talla && i.color === item.color; });
     if(!dup){ state.list.push(item); saveList(); }
     track("AddToCart", {content_name:item.nombre, content_ids:[item.id], content_type:"product", value:item.precio, currency:"COP"});
-    closeProduct();
-    openList();
+    closeProduct({keepEntry:true});
+    openList({replace:true});
   });
 
   var listOverlay = $("listOverlay");
@@ -1201,11 +1227,39 @@
     $("listAnticipo").innerHTML = 'Un solo anticipo de <strong>' + money(CONFIG.ANTICIPO) + '</strong> separa todo tu pedido y <strong>se descuenta del total</strong>.';
   }
 
-  function openList(){
+  function openList(opts){
+    opts = opts || {};
+    rememberScroll();
     renderList(); $("listError").style.display = "none";
     listOverlay.hidden = false; document.body.style.overflow = "hidden";
+    if(opts.replace) histReplace({ov:"list"}, location.href);
+    else if(!opts.noPush) histPush({ov:"list"}, location.href);
   }
-  function closeList(){ listOverlay.hidden = true; if(overlay.hidden) document.body.style.overflow = ""; }
+  function closeList(opts){
+    opts = opts || {};
+    listOverlay.hidden = true;
+    if(overlay.hidden){ document.body.style.overflow = ""; restoreScroll(); }
+    if(!opts.fromPop && histOv() === "list"){ try{ history.back(); }catch(e){} }
+  }
+  /* Botón Atrás / Adelante del navegador */
+  window.addEventListener("popstate", function(e){
+    var st = e.state || {};
+    if(st.ov === "product"){
+      var p = findProduct(st.id);
+      if(p){
+        if(!listOverlay.hidden){ listOverlay.hidden = true; }
+        openProduct(p, {noPush:true});
+        return;
+      }
+    }
+    if(st.ov === "list"){
+      if(!overlay.hidden) closeProduct({fromPop:true});
+      if(listOverlay.hidden) openList({noPush:true});
+      return;
+    }
+    if(!overlay.hidden) closeProduct({fromPop:true});
+    if(!listOverlay.hidden) closeList({fromPop:true});
+  });
   $("listClose").addEventListener("click", closeList);
   listOverlay.addEventListener("click", function(e){ if(e.target === listOverlay) closeList(); });
   $("listClear").addEventListener("click", function(){ state.list = []; saveList(); renderList(); });
