@@ -10,9 +10,14 @@
 <meta property="og:site_name" content="Enviamelo Cali">
 <meta property="og:title" content="Enviamelo Cali · Catálogo de disponibilidad">
 <meta property="og:description" content="Accesorios para moteros, calzado y ropa con entrega a domicilio. Separa con $20.000 de anticipo.">
+<meta property="og:image" content="https://lc-mira.github.io/enviamelocali/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:url" content="https://lc-mira.github.io/enviamelocali/">
 <meta property="og:locale" content="es_CO">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23D71920'/%3E%3Cg fill='white'%3E%3Crect x='12' y='10' width='16' height='4' rx='1'/%3E%3Crect x='12' y='10' width='4' height='20' rx='1'/%3E%3Crect x='12' y='18' width='12' height='4' rx='1'/%3E%3Cpolygon points='23,15 31,20 23,25'/%3E%3Crect x='12' y='26' width='16' height='4' rx='1'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="img/icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -70,10 +75,8 @@
   }
   .header-in{display:flex; align-items:center; justify-content:space-between; height:var(--header-h); gap:12px}
   .brand{display:flex; align-items:center; gap:10px; text-decoration:none}
-  .brand-mark{width:38px; height:38px; flex:none; display:block}
-  .brand-name{font-family:var(--font-display); font-weight:700; font-size:20px; letter-spacing:.02em; line-height:1; text-transform:uppercase}
-  .brand-name b{color:var(--red); font-weight:700}
-  .brand-sub{font-size:10px; color:var(--ink-faint); letter-spacing:.1em; text-transform:uppercase; margin-top:3px}
+  .brand-logo{height:34px; width:auto; display:block}
+  .foot-logo{height:34px; width:auto; display:block; margin-bottom:6px}
   .header-actions{display:flex; align-items:center; gap:8px}
   .icon-btn{
     position:relative; width:42px; height:42px; border-radius:50%; border:1.5px solid var(--line);
@@ -134,7 +137,7 @@
     display:flex; align-items:center; justify-content:center; text-align:center; font-family:var(--font-display);
     font-weight:700; font-size:14px; line-height:1.1; text-transform:uppercase; box-shadow:0 10px 20px -10px rgba(0,0,0,.5);
   }
-  .hv-logo{position:absolute; inset:0; margin:auto; width:140px; height:140px; opacity:.9}
+  .hv-logo{position:absolute; inset:0; margin:auto; width:170px; height:auto; opacity:.95}
 
   /* ---- Franja de confianza ---- */
   .trust-strip{
@@ -350,8 +353,6 @@
   /* ---- Pie ---- */
   footer{background:var(--ink); color:#fff; margin:20px calc(-1 * max(16px, env(safe-area-inset-left,0px))) 0; padding:30px max(16px, env(safe-area-inset-left,0px)) calc(100px + env(safe-area-inset-bottom,0px))}
   .foot-row{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:18px}
-  .foot-brand{font-family:var(--font-display); font-weight:700; font-size:20px; letter-spacing:.02em; text-transform:uppercase}
-  .foot-brand b{color:#FF6B70}
   .foot-sub{font-size:12.5px; color:#B9BCC2; margin-top:6px; line-height:1.5}
   .foot-links{display:flex; gap:10px; flex-wrap:wrap}
   .foot-links a, .foot-links button{
@@ -369,11 +370,7 @@
 <header>
   <div class="wrap header-in">
     <a class="brand" href="./" aria-label="Enviamelo Cali, inicio">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#D71920"/><g fill="#fff"><rect x="12" y="10" width="16" height="4" rx="1"/><rect x="12" y="10" width="4" height="20" rx="1"/><rect x="12" y="18" width="12" height="4" rx="1"/><polygon points="23,15 31,20 23,25"/><rect x="12" y="26" width="16" height="4" rx="1"/></g></svg>
-      <div>
-        <div class="brand-name">Enviamelo <b>Cali</b></div>
-        <div class="brand-sub">Catálogo de disponibilidad</div>
-      </div>
+      <img class="brand-logo" src="img/logo.png" alt="Enviamelo Cali" width="129" height="34" decoding="async">
     </a>
     <div class="header-actions">
       <button class="icon-btn" id="headerList" type="button" aria-label="Mi lista">
@@ -521,7 +518,7 @@
 <footer>
   <div class="wrap foot-row">
     <div>
-      <div class="foot-brand">Enviamelo <b>Cali</b></div>
+      <img class="foot-logo" src="img/logo-blanco.png" alt="Enviamelo Cali" width="129" height="34" loading="lazy">
       <div class="foot-sub">Entrega a domicilio con transportadoras aliadas · Cali, Colombia</div>
       <div class="foot-sub" id="footUpdated"></div>
     </div>
@@ -571,7 +568,7 @@
     helmet:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linecap="round"><path d="M12 38a20 18 0 0140 0z"/><path d="M12 38h40v4a4 4 0 01-4 4H16a4 4 0 01-4-4z"/><path d="M26 38v-8a6 6 0 0112 0v8" stroke="var(--red)"/></g></svg>',
     bag:'<svg viewBox="0 0 64 64"><g fill="none" stroke="var(--ink-soft)" stroke-width="2.2" stroke-linejoin="round"><rect x="12" y="22" width="40" height="30" rx="4"/><path d="M22 22v-4a10 10 0 0120 0v4" stroke="var(--red)"/></g></svg>'
   };
-  var LOGO_WHITE = '<svg class="hv-logo" viewBox="0 0 40 40" aria-hidden="true"><g fill="#fff"><rect x="12" y="10" width="16" height="4" rx="1"/><rect x="12" y="10" width="4" height="20" rx="1"/><rect x="12" y="18" width="12" height="4" rx="1"/><polygon points="23,15 31,20 23,25"/><rect x="12" y="26" width="16" height="4" rx="1"/></g></svg>';
+  var LOGO_WHITE = '<img class="hv-logo" src="img/simbolo-blanco.png" alt="" decoding="async">';
   var BADGE_MAP = {
     "disponible": {cls:"ok", label:"Disponible"},
     "agotandose": {cls:"low", label:"Agotándose"},

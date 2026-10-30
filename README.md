@@ -71,6 +71,8 @@ El evento `Purchase` es el que permite pedirle a Meta que optimice los anuncios 
 
 Marca **Enviamelo Cali**: rojo `#D71920`, grafito `#17181B` y blanco. El verde se usa solo para los botones de WhatsApp. Los colores están al inicio del CSS de `index.html` (`:root`).
 
+Logo y favicon: están en la carpeta `img/` (`logo.png` para fondo claro, `logo-blanco.png` para el pie oscuro, `simbolo-blanco.png` para el panel rojo de la portada, `icon-*.png` y `apple-touch-icon.png` para el ícono de la pestaña y `og.png` para la vista previa al compartir). Para cambiar el logo, reemplaza esos archivos conservando los nombres.
+
 Las fotos con fondo blanco se muestran completas (sin recortar) sobre una tarjeta gris claro (`--tile`, `#EDEEF0`) con `mix-blend-mode: multiply`, así el blanco de la foto se funde con la tarjeta. Si algún día el gris no te gusta, se cambia en `--tile`.
 
 Enlaces para anuncios: `?c=Moteros` abre el catálogo ya filtrado por esa categoría, y `?p=ID` abre directamente un producto.
