@@ -286,6 +286,14 @@
   .thumb img{width:100%; height:100%; object-fit:contain; display:block; mix-blend-mode:multiply}
   .thumb[aria-pressed="true"]{border-color:var(--red)}
   .sheet-body{padding:16px 20px 0}
+  .more{margin-top:20px; padding-top:16px; border-top:1px solid var(--line)}
+  .more-title{font-size:15px; font-weight:700}
+  .more-note{font-size:12.5px; color:var(--ink-soft); margin:2px 0 10px}
+  .more-row{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:6px; margin:0 -20px; padding-inline:20px; scrollbar-width:none}
+  .more-row::-webkit-scrollbar{display:none}
+  .more-row .card{flex:none; width:138px; scroll-snap-align:start; box-shadow:none}
+  .more-row .card-meta{display:none}
+  .more-row .card-name{font-size:12.5px}
   .sheet-cat{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
   .sheet-name{font-size:22px; margin-top:4px}
   .sheet-row{display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap}
@@ -438,7 +446,7 @@
 
 <!-- Ficha de producto -->
 <div class="overlay" id="overlay" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName">
+  <div class="sheet" id="sheetScroll" role="dialog" aria-modal="true" aria-labelledby="sheetName">
     <div class="sheet-top"><button class="sheet-close" id="sheetClose" aria-label="Cerrar" type="button">&times;</button></div>
     <div class="gallery">
       <div class="gallery-main" id="galleryMain"></div>
@@ -483,6 +491,11 @@
         <button class="ghost-btn" id="addListBtn" type="button">Agregar a mi lista</button>
         <p class="fine-print">Te escribimos por WhatsApp para confirmar disponibilidad, tu dirección de entrega y cómo pagar el anticipo.</p>
       </form>
+      <section class="more" id="moreSection" aria-labelledby="moreTitle" hidden>
+        <h3 class="more-title" id="moreTitle">Ver más productos</h3>
+        <p class="more-note" id="moreNote">Un solo anticipo separa todo tu pedido: el envío ya queda cubierto.</p>
+        <div class="more-row" id="moreRow"></div>
+      </section>
     </div>
   </div>
 </div>
@@ -882,7 +895,7 @@
     });
   }
 
-  function cardEl(p){
+  function cardEl(p, onClick){
     var badge = badgeFor(p);
     var card = document.createElement("button");
     card.className = "card"; card.type = "button";
@@ -900,7 +913,7 @@
           '<span class="card-price' + (p.precioNormal ? ' sale' : '') + '">' + (p.precio ? money(p.precio) : "Consultar") + '</span></span>' +
           '<span class="card-btn">Ver</span></div>' +
       '</div>';
-    card.addEventListener("click", function(){ openProduct(p); });
+    card.addEventListener("click", function(){ if(onClick) onClick(p); else openProduct(p); });
     return card;
   }
 
@@ -1069,6 +1082,7 @@
 
   function openProduct(p, opts){
     opts = opts || {};
+    var yaAbierta = !overlay.hidden;   // viene de "Ver más productos": se cambia el contenido de la misma ficha
     rememberScroll();
     state.active = p; state.selSize = ""; state.selColor = ""; state.activePhoto = 0;
     var badge = badgeFor(p), si = sizeInfo(p);
@@ -1123,17 +1137,37 @@
     $("leadForm").reset();
     overlay.hidden = false;
     document.body.style.overflow = "hidden";
-    if(!opts.noPush){
+    renderMore(p);
+    if(yaAbierta){
+      $("sheetScroll").scrollTop = 0;
+      if(!opts.noPush) histReplace({ov:"product", id:p.id}, urlFor(p.id)); // reemplaza: Atrás sigue cerrando la ficha
+    } else if(!opts.noPush){
       // Si se entró con ?p=ID, esa entrada pasa a ser el catálogo y la ficha es una pantalla encima
       if(histOv() !== "product" && new URLSearchParams(location.search).get("p")) histReplace(null, urlFor(null));
       histPush({ov:"product", id:p.id}, urlFor(p.id));
     }
     track("ViewContent", {
       content_name: p.nombre, content_category: p.categoria + (p.subcategoria ? " / " + p.subcategoria : ""),
-      content_ids:[p.id], content_type:"product", value:p.precio, currency:"COP"
+      content_ids:[p.id], content_type:"product", value:p.precio, currency:"COP",
+      origen: yaAbierta ? "ver_mas" : "catalogo"
     });
   }
 
+  /* "Ver más productos": misma subcategoría, luego misma categoría, luego el resto; sin agotados; orden aleatorio */
+  function relatedFor(p){
+    var pool = state.products.filter(function(x){ return x.id !== p.id && norm(x.disponibilidad).indexOf("agotado") === -1; });
+    function rank(x){ return x.subcategoria && x.subcategoria === p.subcategoria && x.categoria === p.categoria ? 0 : (x.categoria === p.categoria ? 1 : 2); }
+    return pool.sort(function(a, b){ return (rank(a) - rank(b)) || (orderKey(a.id) - orderKey(b.id)); }).slice(0, 6);
+  }
+  function renderMore(p){
+    var items = relatedFor(p), sec = $("moreSection"), row = $("moreRow");
+    row.innerHTML = "";
+    sec.hidden = !items.length;
+    items.forEach(function(x){
+      row.appendChild(cardEl(x, function(q){ openProduct(q); }));
+    });
+    row.scrollLeft = 0;
+  }
   function closeProduct(opts){
     opts = opts || {};
     overlay.hidden = true;
