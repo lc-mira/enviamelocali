@@ -289,11 +289,19 @@
   .more{margin-top:20px; padding-top:16px; border-top:1px solid var(--line)}
   .more-title{font-size:15px; font-weight:700}
   .more-note{font-size:12.5px; color:var(--ink-soft); margin:2px 0 10px}
-  .more-row{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:6px; margin:0 -20px; padding-inline:20px; scrollbar-width:none}
+  .more-row{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x proximity; scroll-padding-inline:20px; margin:0 -20px; padding:2px 20px 8px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
   .more-row::-webkit-scrollbar{display:none}
-  .more-row .card{flex:none; width:138px; scroll-snap-align:start; box-shadow:none}
-  .more-row .card-meta{display:none}
-  .more-row .card-name{font-size:12.5px}
+  .more-row .card{flex:none; width:128px; scroll-snap-align:start; box-shadow:none}
+  .more-row .card:hover{transform:none}
+  .more-row .badge{font-size:9.5px; padding:3px 7px; top:6px; left:6px}
+  .more-row .save-tag{top:6px; right:6px; font-size:9.5px; padding:3px 6px}
+  .more-row .card-media img{padding:6px}
+  .more-row .card-body{padding:8px 9px 10px; gap:3px}
+  .more-row .card-cat, .more-row .card-meta, .more-row .card-btn{display:none}
+  .more-row .card-name{font-size:12px; min-height:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .more-row .card-foot{padding-top:4px}
+  .more-row .card-price{font-size:13.5px}
+  .more-row .price-old{font-size:11px}
   .sheet-cat{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint)}
   .sheet-name{font-size:22px; margin-top:4px}
   .sheet-row{display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap}
