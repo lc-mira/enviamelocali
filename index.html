@@ -261,13 +261,13 @@
 
   /* ---- Modal ---- */
   .overlay{
-    position:fixed; inset:0; background:rgba(10,10,10,.55); z-index:50; display:flex; align-items:flex-end;
+    overflow:hidden; position:fixed; inset:0; background:rgba(10,10,10,.55); z-index:50; display:flex; align-items:flex-end;
     justify-content:center; padding:0;
   }
   @media (min-width:640px){ .overlay{align-items:center; padding:20px} }
   .overlay[hidden]{display:none}
   .sheet{
-    background:var(--surface); width:100%; max-width:480px; max-height:92vh; overflow-y:auto; overscroll-behavior:contain;
+    background:var(--surface); width:100%; max-width:480px; max-height:92vh; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain;
     border-radius:18px 18px 0 0; padding:0 0 calc(18px + env(safe-area-inset-bottom,0px)); position:relative;
   }
   @media (min-width:640px){ .sheet{border-radius:18px} }
@@ -286,7 +286,7 @@
   .thumb img{width:100%; height:100%; object-fit:contain; display:block; mix-blend-mode:multiply}
   .thumb[aria-pressed="true"]{border-color:var(--red)}
   .sheet-body{padding:16px 20px 0}
-  .more{margin-top:20px; padding-top:16px; border-top:1px solid var(--line)}
+  .more{overflow-x:clip; margin-top:20px; padding-top:16px; border-top:1px solid var(--line)}
   .more-title{font-size:15px; font-weight:700}
   .more-note{font-size:12.5px; color:var(--ink-soft); margin:2px 0 10px}
   .more-row{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x proximity; scroll-padding-inline:20px; margin:0 -20px; padding:2px 20px 8px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
@@ -337,7 +337,7 @@
     color:var(--ink); font-size:16px; font-family:var(--font-body);
   }
   .form-field input:focus{outline:2px solid var(--red); outline-offset:1px; border-color:var(--red)}
-  .hp{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden}
+  .hp{position:absolute; left:0; top:0; width:1px; height:1px; opacity:0; overflow:hidden; pointer-events:none}
   .submit-btn{
     width:100%; background:var(--wa); color:#fff; border:none; padding:13px; border-radius:11px;
     font-weight:700; font-size:14.5px; display:flex; align-items:center; justify-content:center; gap:8px;
@@ -1090,7 +1090,12 @@
 
   function openProduct(p, opts){
     opts = opts || {};
-    var yaAbierta = !overlay.hidden;   // viene de "Ver más productos": se cambia el contenido de la misma ficha
+    var yaAbierta = !overlay.hidden;   // viene de "Ver más productos"
+    if(yaAbierta){
+      // Se oculta un instante para que el producto nuevo se muestre exactamente como la primera vez
+      // (reinicia los desplazamientos internos de la ficha, de la fila y de las miniaturas).
+      overlay.hidden = true;
+    }
     rememberScroll();
     state.active = p; state.selSize = ""; state.selColor = ""; state.activePhoto = 0;
     var badge = badgeFor(p), si = sizeInfo(p);
@@ -1176,6 +1181,10 @@
     });
     row.scrollLeft = 0;
   }
+  /* La ficha nunca debe desplazarse de lado: si algún navegador lo intenta, se devuelve a 0 */
+  [$("sheetScroll"), overlay].forEach(function(el){
+    el.addEventListener("scroll", function(){ if(el.scrollLeft) el.scrollLeft = 0; });
+  });
   function closeProduct(opts){
     opts = opts || {};
     overlay.hidden = true;
